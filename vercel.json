@@ -1,19 +1,9 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "generate-qr.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "index.html",
-      "use": "@vercel/static"
-    }
-  ],
   "rewrites": [
     {
       "source": "/generate-qr",
-      "destination": "/generate-qr.js"
+      "destination": "/api/generate-qr"
     }
   ]
 }
