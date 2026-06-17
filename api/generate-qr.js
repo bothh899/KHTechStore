@@ -11,38 +11,18 @@ export default async function handler(req, res) {
         try {
             const { amount, orderId } = req.body;
 
-            // ==========================================
-            // ជំហានទី ១៖ ចូលគណនីដើម្បីយក Token ថ្មីរាល់ដង
-            // ==========================================
-            const loginResponse = await fetch('https://api-bakong.nbc.gov.kh/v1/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: "vannvirakboth372@gmail.com",       // <-- ដូរត្រង់នេះ
-                    password: "BOTH8994" // <-- ដូរត្រង់នេះ
-                })
-            });
+            // ប្រើ Token ដែលអ្នកបានផ្តល់ឱ្យ (ដាក់បញ្ចូលផ្ទាល់)
+            const myToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiYzNkNjhjOTRhMjE5NDU0OCJ9LCJpYXQiOjE3ODE3MjAwNDEsImV4cCI6MTc4OTQ5NjA0MX0.XO9Vx53t5tIHQ9tjEybmDUE3TlTY5SOqo_2LfhFmNkg";
 
-            const loginData = await loginResponse.json();
-            
-            if (loginData.responseCode !== 0) {
-                return res.status(401).json({ success: false, message: "មិនអាច Login ចូលបាគងបានទេ: " + loginData.responseMessage });
-            }
-
-            // ទាញយក Token ដែលទើបនឹងបង្កើតថ្មីៗ
-            const freshToken = loginData.data.token;
-
-            // ==========================================
-            // ជំហានទី ២៖ ប្រើ Token ថ្មីនោះដើម្បីបង្កើត QR
-            // ==========================================
             const bakongResponse = await fetch('https://api-bakong.nbc.gov.kh/v1/generate_khqr', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiYzNkNjhjOTRhMjE5NDU0OCJ9LCJpYXQiOjE3ODE3MjAwNDEsImV4cCI6MTc4OTQ5NjA0MX0.XO9Vx53t5tIHQ9tjEybmDUE3TlTY5SOqo_2LfhFmNkg` // ប្រើ Token ថ្មីដោយស្វ័យប្រវត្តិ
+                    // ដាក់ Token ចូលនៅទីនេះ
+                    'Authorization': 'Bearer ' + myToken
                 },
                 body: JSON.stringify({
-                    bakongAccountId: "virakboth_vann@bkrt", // ប្រាកដថាឈ្មោះនេះត្រឹមត្រូវ
+                    bakongAccountId: "virakboth_vann@bkrt",
                     merchantName: "VIRAKBOTH VANN",
                     merchantCity: "Phnom Penh",
                     amount: amount,
@@ -57,7 +37,7 @@ export default async function handler(req, res) {
             try {
                 data = JSON.parse(textData);
             } catch (e) {
-                throw new Error(`Bakong API ឆ្លើយតបខុសប្រក្រតី: Status ${bakongResponse.status} - ${textData.substring(0, 100)}`);
+                throw new Error(`Bakong API ឆ្លើយតបខុសប្រក្រតី: Status ${bakongResponse.status}`);
             }
 
             if (data.responseCode === 0) {
