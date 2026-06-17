@@ -1,7 +1,6 @@
 // File: api/generate-qr.js
 
 export default async function handler(req, res) {
-    // អនុញ្ញាតឱ្យ Android App ហៅមកបាន (CORS)
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -10,42 +9,50 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
         try {
-            // ទទួលទិន្នន័យ (តម្លៃ និង លេខកូដទំនិញ) ពី Android App
             const { amount, orderId } = req.body;
 
-            // បាញ់សំណើទៅកាន់ Bakong API
             const bakongResponse = await fetch('https://api-bakong.nbc.gov.kh/v1/generate_khqr', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // ដាក់ Token របស់អ្នកនៅទីនេះ
+                    // សូមប្រាកដថា Token នេះនៅថ្មី! បើផុតកំណត់ ត្រូវហៅ API Login យកថ្មីសិន
                     'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiYzNkNjhjOTRhMjE5NDU0OCJ9LCJpYXQiOjE3ODE3MjAwNDEsImV4cCI6MTc4OTQ5NjA0MX0.XO9Vx53t5tIHQ9tjEybmDUE3TlTY5SOqo_2LfhFmNkg'
                 },
                 body: JSON.stringify({
-                    bakongAccountId: "virakboth_vann@bkrt", // ឧទាហរណ៍: khtech@aba
+                    bakongAccountId: "virakboth_vann@bkrt",
                     merchantName: "KH Tech Store",
                     merchantCity: "Phnom Penh",
                     amount: amount,
                     currency: "USD",
-                    billNumber: orderId
+                    billNumber: orderId || `ORD-${Date.now()}`
                 })
             });
 
-            const data = await bakongResponse.json();
+            // អានទិន្នន័យជា Text ជាមុនសិន ការពារកុំឱ្យគាំងពេល Bakong បោះមកមិនមែនជា JSON
+            const textData = await bakongResponse.text();
+            let data;
+            
+            try {
+                data = JSON.parse(textData);
+            } catch (e) {
+                // ប្រសិនបើអាន JSON មិនចេញ មានន័យថា Bakong បដិសេធ Token យើងហើយ
+                throw new Error(`Bakong API ឆ្លើយតបខុសប្រក្រតី (អាចមកពី Token ផុតកំណត់): Status ${bakongResponse.status} - ${textData.substring(0, 100)}`);
+            }
 
-            // បោះរូបភាព QR Code និងលេខ MD5 ត្រឡប់ទៅ Android App វិញ
             if (data.responseCode === 0) {
                 res.status(200).json({ 
                     success: true, 
-                    qrString: data.data.qrString, // រូបភាព Base64
-                    md5: data.data.md5            // ទុកសម្រាប់ឆែកមើលលុយចូល
+                    qrString: data.data.qrString, 
+                    md5: data.data.md5            
                 });
             } else {
                 res.status(400).json({ success: false, message: data.responseMessage });
             }
 
         } catch (error) {
-            res.status(500).json({ success: false, message: "Server Error" });
+            console.error("Vercel Server Error:", error);
+            // បោះ Error មក App វិញ ដើម្បីឱ្យលោត Toast ក្នុងទូរស័ព្ទប្រាប់យើង
+            res.status(500).json({ success: false, message: `បញ្ហាសេវើ: ${error.message}` });
         }
     } else {
         res.status(405).json({ message: "Method Not Allowed" });
