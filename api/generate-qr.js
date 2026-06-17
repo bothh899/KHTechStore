@@ -11,16 +11,39 @@ export default async function handler(req, res) {
         try {
             const { amount, orderId } = req.body;
 
+            // ==========================================
+            // ជំហានទី ១៖ ចូលគណនីដើម្បីយក Token ថ្មីរាល់ដង
+            // ==========================================
+            const loginResponse = await fetch('https://api-bakong.nbc.gov.kh/v1/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: "vannvirakboth372@gmail.com",       // <-- ដូរត្រង់នេះ
+                    password: "BOTH8994" // <-- ដូរត្រង់នេះ
+                })
+            });
+
+            const loginData = await loginResponse.json();
+            
+            if (loginData.responseCode !== 0) {
+                return res.status(401).json({ success: false, message: "មិនអាច Login ចូលបាគងបានទេ: " + loginData.responseMessage });
+            }
+
+            // ទាញយក Token ដែលទើបនឹងបង្កើតថ្មីៗ
+            const freshToken = loginData.data.token;
+
+            // ==========================================
+            // ជំហានទី ២៖ ប្រើ Token ថ្មីនោះដើម្បីបង្កើត QR
+            // ==========================================
             const bakongResponse = await fetch('https://api-bakong.nbc.gov.kh/v1/generate_khqr', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // សូមប្រាកដថា Token នេះនៅថ្មី! បើផុតកំណត់ ត្រូវហៅ API Login យកថ្មីសិន
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiYzNkNjhjOTRhMjE5NDU0OCJ9LCJpYXQiOjE3ODE3MjAwNDEsImV4cCI6MTc4OTQ5NjA0MX0.XO9Vx53t5tIHQ9tjEybmDUE3TlTY5SOqo_2LfhFmNkg'
+                    'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiYzNkNjhjOTRhMjE5NDU0OCJ9LCJpYXQiOjE3ODE3MjAwNDEsImV4cCI6MTc4OTQ5NjA0MX0.XO9Vx53t5tIHQ9tjEybmDUE3TlTY5SOqo_2LfhFmNkg` // ប្រើ Token ថ្មីដោយស្វ័យប្រវត្តិ
                 },
                 body: JSON.stringify({
-                    bakongAccountId: "virakboth_vann@bkrt",
-                    merchantName: "KH Tech Store",
+                    bakongAccountId: "virakboth_vann@bkrt", // ប្រាកដថាឈ្មោះនេះត្រឹមត្រូវ
+                    merchantName: "VIRAKBOTH VANN",
                     merchantCity: "Phnom Penh",
                     amount: amount,
                     currency: "USD",
@@ -28,15 +51,13 @@ export default async function handler(req, res) {
                 })
             });
 
-            // អានទិន្នន័យជា Text ជាមុនសិន ការពារកុំឱ្យគាំងពេល Bakong បោះមកមិនមែនជា JSON
             const textData = await bakongResponse.text();
             let data;
             
             try {
                 data = JSON.parse(textData);
             } catch (e) {
-                // ប្រសិនបើអាន JSON មិនចេញ មានន័យថា Bakong បដិសេធ Token យើងហើយ
-                throw new Error(`Bakong API ឆ្លើយតបខុសប្រក្រតី (អាចមកពី Token ផុតកំណត់): Status ${bakongResponse.status} - ${textData.substring(0, 100)}`);
+                throw new Error(`Bakong API ឆ្លើយតបខុសប្រក្រតី: Status ${bakongResponse.status} - ${textData.substring(0, 100)}`);
             }
 
             if (data.responseCode === 0) {
@@ -51,7 +72,6 @@ export default async function handler(req, res) {
 
         } catch (error) {
             console.error("Vercel Server Error:", error);
-            // បោះ Error មក App វិញ ដើម្បីឱ្យលោត Toast ក្នុងទូរស័ព្ទប្រាប់យើង
             res.status(500).json({ success: false, message: `បញ្ហាសេវើ: ${error.message}` });
         }
     } else {
