@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KH Tech Store — Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════════ */
+:root {
+  --brand:        #818cf8;
+  --brand-dark:   #6366f1;
+  --brand-deep:   #4f46e5;
+  --brand-glow:   rgba(129,140,248,0.18);
+  --brand2:       #a78bfa;
+  --brand-grad:   linear-gradient(135deg, #6366f1 0%, #a78bfa 100%);
+
+  --bg:    #060611;
+  --s1:    #0a0a18;
+  --s2:    #0f0f1e;
+  --s3:    #141428;
+  --s4:    #191930;
+  --s5:    #1e1e38;
+
+  --b0: rgba(255,255,255,0.03);
+  --b1: rgba(255,255,255,0.06);
+  --b2: rgba(255,255,255,0.10);
+  --b3: rgba(255,255,255,0.16);
+  --b4: rgba(255,255,255,0.24);
+
+  --t1: #e8e8fa;
+  --t2: #7878a0;
+  --t3: #3c3c60;
+  --t4: #252540;
+
+  --green:  #10b981;
+  --amber:  #f59e0b;
+  --rose:   #f43f5e;
+  --sky:    #38bdf8;
+  --violet: #a78bfa;
+  --cyan:   #06b6d4;
+  --orange: #fb923c;
+
+  --sidebar-w:    252px;
+  --topbar-h:     58px;
+  --radius-xs:    6px;
+  --radius-sm:    9px;
+  --radius-md:    13px;
+  --radius-lg:    17px;
+  --radius-xl:    22px;
+  --radius-2xl:   28px;
+  --radius-full:  9999px;
+
+  --shadow-xs:  0 1px 3px rgba(0,0,0,.4);
+  --shadow-sm:  0 2px 8px rgba(0,0,0,.5), 0 1px 2px rgba(0,0,0,.3);
+  --shadow-md:  0 4px 20px rgba(0,0,0,.55), 0 2px 6px rgba(0,0,0,.3);
+  --shadow-lg:  0 8px 40px rgba(0,0,0,.65), 0 4px 12px rgba(0,0,0,.35);
+  --shadow-xl:  0 20px 80px rgba(0,0,0,.7);
+  --shadow-brand: 0 4px 24px rgba(99,102,241,.45);
+  --shadow-brand-sm: 0 2px 12px rgba(99,102,241,.3);
+
+  --ease-spring: cubic-bezier(.34,1.56,.64,1);
+  --ease-out:    cubic-bezier(.0,0,.2,1);
+  --ease-in-out: cubic-bezier(.4,0,.2,1);
+  --dur-fast: 120ms;
+  --dur-norm: 220ms;
+  --dur-slow: 380ms;
+}
+
+/* ═══════════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', 'Kantumruy Pro', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--t1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+img { display: block; }
+button { font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--b3); }
+
+/* ═══════════════════════════════════════════════════
+   AMBIENT BACKGROUND
+═══════════════════════════════════════════════════ */
+.ambient {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+}
+.amb-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(120px); opacity: 0.35;
+  animation: orbFloat 12s ease-in-out infinite alternate;
+}
+.amb-orb1 {
+  top: -20%; left: -15%; width: 55vw; height: 55vw;
+  background: radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%);
+  animation-delay: 0s;
+}
+.amb-orb2 {
+  bottom: -15%; right: -10%; width: 45vw; height: 45vw;
+  background: radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%);
+  animation-delay: -5s;
+}
+.amb-orb3 {
+  top: 40%; left: 50%; width: 30vw; height: 30vw;
+  background: radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 70%);
+  animation-delay: -3s;
+}
+@keyframes orbFloat {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(3%,4%) scale(1.06); }
+}
+/* Noise texture */
+.ambient::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+  opacity: 0.5;
+}
+
+/* ═══════════════════════════════════════════════════
+   TOAST SYSTEM
+═══════════════════════════════════════════════════ */
+#toast-container {
+  position: fixed; top: 1.1rem; right: 1.1rem;
+  z-index: 9999; display: flex; flex-direction: column; gap: .5rem;
+}
+.toast {
+  display: flex; align-items: flex-start; gap: .7rem;
+  padding: .85rem 1.1rem; border-radius: var(--radius-md);
+  font-size: .78rem; font-weight: 500; max-width: 340px;
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid; box-shadow: var(--shadow-lg);
+  transform: translateX(calc(100% + 1.5rem)) scale(.96);
+  transition: transform var(--dur-slow) var(--ease-spring), opacity var(--dur-norm) var(--ease-out);
+  opacity: 0;
+}
+.toast .t-icon {
+  width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: .72rem; flex-shrink: 0; margin-top: .04rem;
+}
+.toast .t-body { flex: 1; }
+.toast .t-msg { line-height: 1.45; }
+.toast.show { transform: translateX(0) scale(1); opacity: 1; }
+.toast.hide { transform: translateX(calc(100% + 1.5rem)) scale(.95); opacity: 0; }
+
+.toast-s { background: rgba(16,185,129,.11); border-color: rgba(16,185,129,.25); color: #6ee7b7; }
+.toast-s .t-icon { background: rgba(16,185,129,.2); color: var(--green); }
+.toast-e { background: rgba(244,63,94,.11); border-color: rgba(244,63,94,.25); color: #fda4af; }
+.toast-e .t-icon { background: rgba(244,63,94,.2); color: var(--rose); }
+.toast-w { background: rgba(245,158,11,.11); border-color: rgba(245,158,11,.25); color: #fcd34d; }
+.toast-w .t-icon { background: rgba(245,158,11,.2); color: var(--amber); }
+
+/* ═══════════════════════════════════════════════════
+   LOGIN PAGE
+═══════════════════════════════════════════════════ */
+#login-view {
+  position: relative; min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem; z-index: 1;
+}
+.login-card {
+  position: relative; width: 100%; max-width: 424px;
+  background: rgba(15,15,30,0.8);
+  backdrop-filter: blur(48px); -webkit-backdrop-filter: blur(48px);
+  border: 1px solid var(--b2);
+  border-radius: var(--radius-2xl);
+  padding: 2.75rem 2.5rem;
+  box-shadow:
+    0 0 0 1px rgba(129,140,248,.12),
+    var(--shadow-xl),
+    0 0 100px rgba(99,102,241,.06);
+  animation: loginReveal .6s var(--ease-spring) both;
+}
+@keyframes loginReveal {
+  from { opacity: 0; transform: translateY(24px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.login-card::before {
+  content: '';
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 55%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(129,140,248,.55), transparent);
+  border-radius: 99px;
+}
+.login-logo {
+  display: flex; align-items: center; justify-content: center;
+  gap: .85rem; margin-bottom: 2.2rem;
+}
+.login-logo-icon {
+  width: 50px; height: 50px;
+  background: var(--brand-grad);
+  border-radius: 15px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem; color: #fff;
+  box-shadow: var(--shadow-brand);
+  position: relative;
+}
+.login-logo-icon::after {
+  content: '';
+  position: absolute; inset: -1px;
+  border-radius: 15px;
+  background: var(--brand-grad);
+  opacity: .35; z-index: -1;
+  filter: blur(8px);
+}
+.login-logo-text { line-height: 1.2; }
+.login-logo-name { font-size: 1.1rem; font-weight: 800; letter-spacing: -.03em; color: var(--t1); }
+.login-logo-sub {
+  font-size: .64rem; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--t3); margin-top: 2px;
+}
+.login-heading { font-size: 1.5rem; font-weight: 800; letter-spacing: -.04em; text-align: center; color: var(--t1); margin-bottom: .35rem; }
+.login-sub { font-size: .8rem; color: var(--t3); text-align: center; margin-bottom: 2rem; }
+.login-divider {
+  display: flex; align-items: center; gap: .75rem; margin-bottom: 1.6rem;
+}
+.login-divider::before, .login-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--b1);
+}
+.login-divider span { font-size: .65rem; color: var(--t3); white-space: nowrap; }
+
+/* Form group */
+.fg { margin-bottom: 1.05rem; }
+.fl {
+  display: block; font-size: .72rem; font-weight: 600;
+  color: var(--t2); margin-bottom: .42rem; letter-spacing: .01em;
+}
+.input-wrap { position: relative; }
+.input-ico {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--t3); font-size: .75rem; pointer-events: none;
+  transition: color var(--dur-norm);
+}
+.finp {
+  width: 100%; background: var(--b0);
+  border: 1px solid var(--b1); border-radius: var(--radius-md);
+  padding: .72rem .95rem .72rem 2.45rem;
+  color: var(--t1); font-size: .84rem;
+  outline: none; transition: all var(--dur-norm);
+}
+.finp::placeholder { color: var(--t3); }
+.finp:focus {
+  border-color: var(--brand); background: rgba(129,140,248,.05);
+  box-shadow: 0 0 0 3px rgba(129,140,248,.14);
+}
+.finp:focus + .input-ico,
+.input-wrap:focus-within .input-ico { color: var(--brand); }
+.btn-login {
+  width: 100%; margin-top: .4rem;
+  display: flex; align-items: center; justify-content: center; gap: .55rem;
+  padding: .8rem 1.5rem;
+  background: var(--brand-grad); color: #fff;
+  font-weight: 700; font-size: .88rem;
+  border: none; border-radius: var(--radius-md); cursor: pointer;
+  transition: all var(--dur-norm); box-shadow: var(--shadow-brand);
+  position: relative; overflow: hidden;
+}
+.btn-login::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.12), transparent);
+  opacity: 0; transition: opacity var(--dur-fast);
+}
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(99,102,241,.55); }
+.btn-login:hover::after { opacity: 1; }
+.btn-login:active { transform: translateY(0); }
+.btn-login:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ═══════════════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════════════ */
+#main-view { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+/* ═══════════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0;
+  background: rgba(10,10,24,.92);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border-right: 1px solid var(--b1);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.sb-header {
+  padding: 1.2rem 1.1rem 1rem;
+  border-bottom: 1px solid var(--b0);
+  display: flex; align-items: center; gap: .8rem;
+  flex-shrink: 0;
+}
+.sb-logo-icon {
+  width: 36px; height: 36px; flex-shrink: 0;
+  background: var(--brand-grad);
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .88rem; color: #fff;
+  box-shadow: var(--shadow-brand-sm);
+}
+.sb-logo-name { font-size: .9rem; font-weight: 800; letter-spacing: -.03em; color: var(--t1); }
+.sb-logo-status {
+  display: flex; align-items: center; gap: 5px;
+  font-size: .62rem; color: var(--green); margin-top: 2px;
+  font-weight: 500;
+}
+.sb-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0;
+  animation: pulseDot 2.5s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,.5); opacity: 1; }
+  50%      { box-shadow: 0 0 0 4px rgba(16,185,129,.0); opacity: .75; }
+}
+.sb-nav { flex: 1; padding: .6rem .65rem; overflow-y: auto; }
+.sb-section {
+  font-size: .6rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--t3);
+  padding: .8rem .55rem .28rem; margin-bottom: .15rem;
+}
+.nav-btn {
+  width: 100%; display: flex; align-items: center; gap: .65rem;
+  padding: .55rem .8rem; border-radius: var(--radius-sm);
+  font-size: .8rem; font-weight: 500; color: var(--t2);
+  border: none; background: transparent; cursor: pointer; text-align: left;
+  transition: all var(--dur-norm); margin-bottom: 2px;
+  position: relative; overflow: hidden;
+}
+.nav-btn:hover { background: var(--b1); color: var(--t1); }
+.nav-btn .nav-icon {
+  width: 18px; text-align: center; font-size: .78rem; flex-shrink: 0;
+  transition: color var(--dur-norm);
+}
+.nav-btn .nav-label { flex: 1; }
+.nav-btn .nav-badge {
+  background: var(--rose); color: #fff;
+  font-size: .58rem; font-weight: 700;
+  padding: 1px 6px; border-radius: var(--radius-full);
+  animation: badgePulse 2.5s ease-in-out infinite;
+}
+@keyframes badgePulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(244,63,94,.5); }
+  50%      { box-shadow: 0 0 0 4px rgba(244,63,94,.0); }
+}
+.nav-btn.active-nav {
+  background: rgba(129,140,248,.1);
+  color: #c7d2fe;
+}
+.nav-btn.active-nav::before {
+  content: '';
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 60%; border-radius: 0 3px 3px 0;
+  background: var(--brand-grad);
+}
+.nav-btn.active-nav .nav-icon { color: var(--brand); }
+
+.sb-footer {
+  padding: .8rem; border-top: 1px solid var(--b0); flex-shrink: 0;
+}
+.sb-user-card {
+  display: flex; align-items: center; gap: .65rem;
+  padding: .6rem .75rem; border-radius: var(--radius-md);
+  background: var(--b0); border: 1px solid var(--b1);
+  margin-bottom: .45rem; transition: border-color var(--dur-fast);
+}
+.sb-user-card:hover { border-color: var(--b2); }
+.sb-avatar {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: var(--brand-grad);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .75rem; font-weight: 700; color: #fff;
+  box-shadow: 0 0 0 2px rgba(129,140,248,.2);
+}
+.sb-user-name { font-size: .75rem; font-weight: 600; color: var(--t1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-user-role { font-size: .62rem; color: var(--t3); margin-top: 1px; }
+#btn-logout {
+  width: 100%; display: flex; align-items: center; gap: .6rem;
+  padding: .52rem .8rem; border-radius: var(--radius-sm);
+  font-size: .77rem; font-weight: 500;
+  color: rgba(244,63,94,.8); border: none; background: transparent;
+  cursor: pointer; transition: all var(--dur-norm); text-align: left;
+}
+#btn-logout:hover { background: rgba(244,63,94,.07); color: var(--rose); }
+
+/* Mobile overlay */
+.mob-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.65); z-index: 99;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+.ham-btn {
+  display: none; width: 36px; height: 36px;
+  border-radius: var(--radius-sm); background: var(--b1);
+  border: 1px solid var(--b2); align-items: center; justify-content: center;
+  color: var(--t2); cursor: pointer; font-size: .85rem;
+  transition: all var(--dur-norm);
+}
+.ham-btn:hover { background: var(--b2); color: var(--t1); }
+
+/* ═══════════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════════ */
+.mcontent {
+  flex: 1; margin-left: var(--sidebar-w);
+  display: flex; flex-direction: column; min-height: 100vh; min-width: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════════════ */
+.topbar {
+  height: var(--topbar-h);
+  background: rgba(6,6,17,.75);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--b1);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.6rem;
+  position: sticky; top: 0; z-index: 50; flex-shrink: 0;
+}
+.topbar-left { display: flex; align-items: center; gap: .75rem; }
+.page-title { font-size: .9rem; font-weight: 700; color: var(--t1); letter-spacing: -.02em; }
+.page-breadcrumb { font-size: .72rem; color: var(--t3); }
+.topbar-right { display: flex; align-items: center; gap: .55rem; }
+.tb-icon-btn {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  background: var(--b1); border: 1px solid var(--b1);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t2); cursor: pointer; font-size: .82rem;
+  transition: all var(--dur-norm); position: relative;
+}
+.tb-icon-btn:hover { background: var(--b2); border-color: var(--b2); color: var(--t1); }
+.tb-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--brand-grad);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .8rem; font-weight: 700; color: #fff; cursor: pointer;
+  box-shadow: var(--shadow-brand-sm);
+}
+
+/* ═══════════════════════════════════════════════════
+   CONTENT AREA
+═══════════════════════════════════════════════════ */
+.carea { flex: 1; padding: 1.6rem; overflow-y: auto; }
+
+/* ═══════════════════════════════════════════════════
+   STAT CARDS
+═══════════════════════════════════════════════════ */
+.sgrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .9rem; margin-bottom: 1.5rem;
+}
+.scard {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: var(--radius-lg); padding: 1.25rem;
+  position: relative; overflow: hidden;
+  transition: transform var(--dur-norm), border-color var(--dur-norm), box-shadow var(--dur-norm);
+}
+.scard:hover {
+  transform: translateY(-2px); border-color: var(--b2);
+  box-shadow: var(--shadow-lg);
+}
+.scard::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+}
+.scard-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: .85rem; }
+.scard-label { font-size: .67rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--t3); }
+.scard-icon {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center; font-size: .88rem; flex-shrink: 0;
+}
+.scard-val { font-size: 1.7rem; font-weight: 900; color: var(--t1); letter-spacing: -.05em; line-height: 1; }
+.scard-sub { font-size: .68rem; color: var(--t3); margin-top: .35rem; }
+
+.scard-green .scard-icon { background: rgba(16,185,129,.1); color: var(--green); }
+.scard-blue  .scard-icon { background: rgba(129,140,248,.1); color: var(--brand); }
+.scard-violet .scard-icon { background: rgba(167,139,250,.1); color: var(--violet); }
+.scard-amber .scard-icon { background: rgba(245,158,11,.1); color: var(--amber); }
+
+/* Subtle glow lines on stat cards */
+.scard-green { box-shadow: inset 0 0 0 0 transparent; }
+.scard-green:hover { box-shadow: 0 0 0 1px rgba(16,185,129,.12), var(--shadow-md); }
+.scard-blue:hover  { box-shadow: 0 0 0 1px rgba(129,140,248,.12), var(--shadow-md); }
+.scard-violet:hover { box-shadow: 0 0 0 1px rgba(167,139,250,.12), var(--shadow-md); }
+.scard-amber:hover { box-shadow: 0 0 0 1px rgba(245,158,11,.12), var(--shadow-md); }
+
+/* ═══════════════════════════════════════════════════
+   SURFACE CARD (sc)
+═══════════════════════════════════════════════════ */
+.sc {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.sc-head {
+  padding: .95rem 1.25rem;
+  border-bottom: 1px solid var(--b0);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sc-title { font-size: .84rem; font-weight: 700; color: var(--t1); letter-spacing: -.01em; }
+.sc-action {
+  font-size: .73rem; font-weight: 600; color: var(--brand);
+  cursor: pointer; background: none; border: none;
+  transition: opacity var(--dur-fast); padding: .28rem .6rem;
+  border-radius: var(--radius-xs); transition: all var(--dur-norm);
+}
+.sc-action:hover { background: rgba(129,140,248,.1); opacity: .9; }
+
+/* ═══════════════════════════════════════════════════
+   DATA TABLE
+═══════════════════════════════════════════════════ */
+.dt { width: 100%; border-collapse: collapse; }
+.dt thead tr { border-bottom: 1px solid var(--b1); }
+.dt th {
+  padding: .65rem 1.2rem;
+  font-size: .64rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--t3); text-align: left;
+  white-space: nowrap; background: var(--b0);
+}
+.dt th.r { text-align: right; }
+.dt th.c { text-align: center; }
+.dt tbody tr {
+  border-bottom: 1px solid var(--b0);
+  transition: background var(--dur-fast);
+}
+.dt tbody tr:last-child { border-bottom: none; }
+.dt tbody tr:hover { background: rgba(255,255,255,.018); }
+.dt td {
+  padding: .9rem 1.2rem; font-size: .8rem; color: var(--t2); vertical-align: middle;
+}
+.dt td.r { text-align: right; }
+.dt td.c { text-align: center; }
+.cell-primary { font-weight: 600; color: var(--t1); }
+.cell-mono { font-family: 'SF Mono','Fira Code','Cascadia Code',monospace; font-size: .7rem; color: var(--t3); }
+.cell-empty { text-align: center; padding: 3rem; color: var(--t3); font-size: .8rem; }
+
+/* Product thumb */
+.pthumb {
+  width: 44px; height: 44px; border-radius: var(--radius-sm);
+  object-fit: cover; border: 1px solid var(--b2); background: var(--s3);
+  transition: transform var(--dur-norm);
+}
+.dt tbody tr:hover .pthumb { transform: scale(1.06); }
+
+/* ═══════════════════════════════════════════════════
+   BADGES
+═══════════════════════════════════════════════════ */
+.badge {
+  display: inline-flex; align-items: center; gap: .3rem;
+  padding: .22rem .65rem; border-radius: var(--radius-full);
+  font-size: .66rem; font-weight: 700; border: 1px solid;
+  white-space: nowrap;
+}
+.badge::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; flex-shrink: 0;
+}
+.bg  { background: rgba(16,185,129,.1);  color: #34d399; border-color: rgba(16,185,129,.2); }
+.ba  { background: rgba(245,158,11,.1);  color: #fbbf24; border-color: rgba(245,158,11,.2); }
+.br  { background: rgba(244,63,94,.1);   color: #fb7185; border-color: rgba(244,63,94,.2); }
+.bs  { background: var(--b0);            color: var(--t2); border-color: var(--b1); }
+.bi  { background: rgba(129,140,248,.1); color: #c7d2fe; border-color: rgba(129,140,248,.2); }
+
+/* Chips */
+.chip {
+  display: inline-flex; align-items: center;
+  padding: .14rem .48rem;
+  background: var(--b1); border: 1px solid var(--b2);
+  border-radius: var(--radius-xs); font-size: .65rem; color: var(--t2);
+}
+
+/* Stock badges */
+.stk {
+  display: inline-flex; align-items: center; gap: .32rem;
+  padding: .25rem .65rem; border-radius: var(--radius-sm);
+  font-size: .72rem; font-weight: 700; border: 1px solid;
+}
+.stk-ok  { background: rgba(16,185,129,.07);  color: #34d399; border-color: rgba(16,185,129,.16); }
+.stk-low { background: rgba(245,158,11,.07);  color: #fbbf24; border-color: rgba(245,158,11,.16); }
+.stk-out { background: rgba(244,63,94,.07);   color: #fb7185; border-color: rgba(244,63,94,.16); animation: blink 1.6s ease-in-out infinite; }
+@keyframes blink { 0%,100%{ opacity: 1; } 50%{ opacity: .45; } }
+
+/* ═══════════════════════════════════════════════════
+   TOOLBAR
+═══════════════════════════════════════════════════ */
+.toolbar {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: var(--radius-lg); padding: .85rem 1.1rem;
+  display: flex; align-items: center; gap: .85rem;
+  flex-wrap: wrap; margin-bottom: .9rem;
+}
+.search-wrap { position: relative; flex: 1; min-width: 0; max-width: 320px; }
+.search-ico {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--t3); font-size: .74rem; pointer-events: none;
+  transition: color var(--dur-norm);
+}
+.sinp {
+  width: 100%; background: var(--b0); border: 1px solid var(--b1);
+  border-radius: var(--radius-sm); padding: .52rem .9rem .52rem 2.15rem;
+  color: var(--t1); font-size: .8rem; outline: none; transition: all var(--dur-norm);
+}
+.sinp::placeholder { color: var(--t3); }
+.sinp:focus {
+  border-color: var(--brand); background: rgba(129,140,248,.05);
+  box-shadow: 0 0 0 3px rgba(129,140,248,.1);
+}
+.sinp:focus ~ .search-ico,
+.search-wrap:focus-within .search-ico { color: var(--brand); }
+
+/* ═══════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .55rem 1rem; border-radius: var(--radius-sm);
+  font-size: .79rem; font-weight: 600; cursor: pointer;
+  border: none; transition: all var(--dur-norm); white-space: nowrap;
+  position: relative; overflow: hidden;
+}
+.btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.08), transparent);
+  opacity: 0; transition: opacity var(--dur-fast);
+}
+.btn:hover::after { opacity: 1; }
+.btn:active { transform: scale(.97); }
+
+.btn-sm  { padding: .32rem .75rem; font-size: .73rem; border-radius: var(--radius-xs); }
+.btn-xs  { padding: .22rem .58rem; font-size: .67rem; border-radius: var(--radius-xs); }
+
+.btn-ind {
+  background: var(--brand-grad); color: #fff;
+  box-shadow: var(--shadow-brand-sm);
+}
+.btn-ind:hover { box-shadow: var(--shadow-brand); transform: translateY(-1px); }
+
+.btn-ghost {
+  background: var(--b1); border: 1px solid var(--b2); color: var(--t2);
+}
+.btn-ghost:hover { background: var(--b2); color: var(--t1); }
+
+.btn-blue {
+  background: rgba(129,140,248,.1); color: #c7d2fe;
+  border: 1px solid rgba(129,140,248,.2);
+}
+.btn-blue:hover { background: rgba(129,140,248,.18); }
+
+.btn-rose {
+  background: rgba(244,63,94,.1); color: #fb7185;
+  border: 1px solid rgba(244,63,94,.2);
+}
+.btn-rose:hover { background: rgba(244,63,94,.18); }
+
+.btn-dark {
+  background: var(--s4); color: var(--t1); border: 1px solid var(--b2);
+}
+.btn-dark:hover { background: var(--s5); }
+
+.btn-green {
+  background: rgba(16,185,129,.1); color: #34d399;
+  border: 1px solid rgba(16,185,129,.2);
+}
+.btn-green:hover { background: rgba(16,185,129,.18); }
+
+/* ═══════════════════════════════════════════════════
+   FORM ELEMENTS
+═══════════════════════════════════════════════════ */
+.fcard {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.fsec { padding: 1.2rem; }
+.fstitle {
+  font-size: .84rem; font-weight: 700; color: var(--t1);
+  margin-bottom: 1rem; padding-bottom: .75rem;
+  border-bottom: 1px solid var(--b0); letter-spacing: -.01em;
+}
+.fgroup { margin-bottom: .85rem; }
+.flabel {
+  display: block; font-size: .7rem; font-weight: 600;
+  color: var(--t2); margin-bottom: .4rem; letter-spacing: .01em;
+}
+.flabel span { color: var(--rose); }
+.fi {
+  width: 100%; background: var(--b0); border: 1px solid var(--b1);
+  border-radius: var(--radius-sm); padding: .6rem .85rem;
+  color: var(--t1); font-size: .8rem; outline: none; transition: all var(--dur-norm);
+}
+.fi::placeholder { color: var(--t3); }
+.fi:focus {
+  border-color: var(--brand); background: rgba(129,140,248,.04);
+  box-shadow: 0 0 0 3px rgba(129,140,248,.1);
+}
+.fi-sel { appearance: none; cursor: pointer; }
+.fi-ta  { resize: vertical; min-height: 80px; }
+.frow   { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
+
+/* Inventory input */
+.iinp {
+  width: 72px; background: var(--b0); border: 1px solid var(--b1);
+  border-radius: var(--radius-xs); padding: .32rem .5rem;
+  color: var(--t1); font-size: .8rem; text-align: center; outline: none;
+  transition: all var(--dur-norm);
+}
+.iinp:focus { border-color: var(--brand); box-shadow: 0 0 0 2px rgba(129,140,248,.12); }
+
+/* Order status select */
+.ssel {
+  background: var(--b1); border: 1px solid var(--b2);
+  border-radius: var(--radius-xs); padding: .3rem .6rem;
+  color: var(--t1); font-size: .73rem; outline: none; cursor: pointer;
+  transition: border-color var(--dur-norm);
+}
+.ssel:focus { border-color: var(--brand); }
+
+/* Checkbox */
+.cb-wrap { display: inline-flex; align-items: center; cursor: pointer; }
+.cb-inp {
+  appearance: none; width: 16px; height: 16px;
+  border: 1px solid var(--b3); border-radius: 4px;
+  background: var(--b0); cursor: pointer;
+  position: relative; transition: all var(--dur-norm);
+  display: flex; align-items: center; justify-content: center;
+}
+.cb-inp:checked { background: var(--rose); border-color: var(--rose); }
+.cb-inp:checked::after {
+  content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+  color: #fff; font-size: 9px; position: absolute;
+}
+
+/* ═══════════════════════════════════════════════════
+   TWO COLUMN LAYOUT
+═══════════════════════════════════════════════════ */
+.tcol { display: grid; grid-template-columns: 288px 1fr; gap: 1.1rem; align-items: start; }
+
+/* ═══════════════════════════════════════════════════
+   ALERTS & INFO
+═══════════════════════════════════════════════════ */
+.alert {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 1.1rem; border-radius: var(--radius-md);
+  font-size: .79rem; font-weight: 500;
+  margin-bottom: .9rem; border: 1px solid;
+}
+.alert-r { background: rgba(244,63,94,.08);  border-color: rgba(244,63,94,.2);  color: #fb7185; }
+.alert-a { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.2); color: #fbbf24; }
+
+.ibox {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 1rem;
+  background: rgba(129,140,248,.06); border: 1px solid rgba(129,140,248,.15);
+  border-radius: var(--radius-md); font-size: .77rem; color: #c7d2fe;
+  margin-bottom: .9rem;
+}
+
+/* ═══════════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════════ */
+#product-modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,8,.7);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  z-index: 1000; display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem;
+  opacity: 0; pointer-events: none; transition: opacity var(--dur-norm);
+}
+#product-modal.mopen { opacity: 1; pointer-events: all; }
+.mpanel {
+  background: var(--s2); border: 1px solid var(--b2);
+  border-radius: var(--radius-xl);
+  max-width: 640px; width: 100%; max-height: 90vh; overflow-y: auto;
+  box-shadow: var(--shadow-xl), 0 0 0 1px rgba(129,140,248,.1);
+  transform: scale(.94) translateY(16px);
+  transition: transform var(--dur-slow) var(--ease-spring);
+}
+#product-modal.mopen .mpanel { transform: scale(1) translateY(0); }
+.mhead {
+  padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--b1);
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; background: var(--s2); z-index: 1;
+  backdrop-filter: blur(12px);
+}
+.mtitle { font-size: .9rem; font-weight: 800; color: var(--t1); letter-spacing: -.02em; }
+.mclose {
+  width: 30px; height: 30px; border-radius: var(--radius-xs);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--b1); color: var(--t2); cursor: pointer;
+  font-size: .82rem; transition: all var(--dur-norm); border: none;
+}
+.mclose:hover { background: var(--b2); color: var(--t1); }
+.mbody { padding: 1.5rem; }
+.mfoot {
+  padding: 1rem 1.5rem; border-top: 1px solid var(--b0);
+  display: flex; justify-content: flex-end; gap: .6rem;
+  position: sticky; bottom: 0; background: var(--s2);
+}
+
+/* ═══════════════════════════════════════════════════
+   NOTIFICATION LOG
+═══════════════════════════════════════════════════ */
+.notif-entry {
+  display: flex; gap: .85rem; padding: .9rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--s2); border: 1px solid var(--b1);
+  transition: border-color var(--dur-norm);
+  margin-bottom: .5rem;
+}
+.notif-entry:hover { border-color: var(--b2); }
+.notif-icon {
+  width: 32px; height: 32px; border-radius: var(--radius-sm); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: .76rem;
+  background: rgba(129,140,248,.1); color: var(--brand); margin-top: 2px;
+}
+.notif-title { font-size: .81rem; font-weight: 700; color: var(--t1); }
+.notif-desc  { font-size: .73rem; color: var(--t3); margin-top: .2rem; line-height: 1.5; }
+.notif-time  { font-size: .64rem; color: var(--t3); margin-top: .28rem; }
+.notif-badge-pill {
+  background: var(--rose); color: #fff; font-size: .58rem; font-weight: 700;
+  padding: 1px 6px; border-radius: var(--radius-full);
+  animation: badgePulse 2.5s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ain { animation: fadeInUp .28s var(--ease-out) both; }
+
+/* ═══════════════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════════════ */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 3.5rem 1.5rem; gap: .85rem;
+}
+.empty-icon {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--b1); border: 1px solid var(--b2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; color: var(--t3);
+}
+.empty-text { font-size: .82rem; color: var(--t3); text-align: center; }
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .sgrid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 960px) {
+  .tcol { grid-template-columns: 252px 1fr; }
+}
+@media (max-width: 800px) {
+  .tcol  { grid-template-columns: 1fr; }
+  .frow  { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-xl); }
+  .mcontent { margin-left: 0; }
+  .ham-btn { display: flex; }
+  .mob-overlay { display: none; pointer-events: none; }
+  .mob-overlay.active { display: block; pointer-events: all; }
+  .carea { padding: 1rem; }
+  .topbar { padding: 0 1rem; }
+  .sgrid { grid-template-columns: repeat(2, 1fr); gap: .7rem; }
+}
+@media (max-width: 480px) {
+  .sgrid { grid-template-columns: 1fr; }
+  .login-card { padding: 2rem 1.5rem; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .search-wrap { max-width: 100%; }
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- Ambient Background -->
+<div class="ambient">
+  <div class="amb-orb amb-orb1"></div>
+  <div class="amb-orb amb-orb2"></div>
+  <div class="amb-orb amb-orb3"></div>
+</div>
+
+<!-- Toasts -->
+<div id="toast-container"></div>
+
+<!-- Mobile Overlay -->
+
+<!-- ═══════════════════════════════════════════════
+     LOGIN
+═══════════════════════════════════════════════ -->
+<div id="login-view">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon"><i class="fa-solid fa-laptop-code"></i></div>
+      <div class="login-logo-text">
+        <div class="login-logo-name">KH Tech Store</div>
+        <div class="login-logo-sub">Admin Dashboard</div>
+      </div>
+    </div>
+
+    <h1 class="login-heading">ចូលប្រើប្រាស់</h1>
+    <p class="login-sub">ផ្ទាំងគ្រប់គ្រងសម្រាប់អ្នកអភិបាល</p>
+
+    <div class="login-divider"><span>Sign in with credentials</span></div>
+
+    <form id="login-form">
+      <div class="fg">
+        <label class="fl" for="login-email">អ៊ីមែល / Email</label>
+        <div class="input-wrap">
+          <input type="email" id="login-email" required class="finp" placeholder="admin@khtech.com" autocomplete="email">
+          <span class="input-ico"><i class="fa-solid fa-envelope"></i></span>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl" for="login-password">ពាក្យសម្ងាត់ / Password</label>
+        <div class="input-wrap">
+          <input type="password" id="login-password" required class="finp" placeholder="••••••••" autocomplete="current-password">
+          <span class="input-ico"><i class="fa-solid fa-lock"></i></span>
+        </div>
+      </div>
+      <button type="submit" id="btn-login-submit" class="btn-login">
+        <span>ចូលប្រើប្រាស់</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN APP
+═══════════════════════════════════════════════ -->
+<div id="main-view" class="hidden" style="display:none;">
+    <div id="main-view" class="hidden" style="display:none;"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <div class="sb-logo-icon"><i class="fa-solid fa-laptop-code"></i></div>
+      <div>
+        <div class="sb-logo-name">KH Tech Store</div>
+        <div class="sb-logo-status">
+          <div class="sb-dot"></div>
+          <span>System Online</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section">Overview</div>
+      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn active-nav">
+        <span class="nav-icon"><i class="fa-solid fa-chart-pie"></i></span>
+        <span class="nav-label">Dashboard</span>
+      </button>
+
+      <div class="sb-section" style="margin-top:.6rem;">ការគ្រប់គ្រង</div>
+      <button onclick="switchTab('products')" id="nav-products" class="nav-btn">
+        <span class="nav-icon"><i class="fa-solid fa-box"></i></span>
+        <span class="nav-label">ផលិតផល</span>
+      </button>
+      <button onclick="switchTab('categories')" id="nav-categories" class="nav-btn">
+        <span class="nav-icon"><i class="fa-solid fa-tags"></i></span>
+        <span class="nav-label">ប្រភេទ</span>
+      </button>
+      <button onclick="switchTab('brands')" id="nav-brands" class="nav-btn">
+        <span class="nav-icon"><i class="fa-solid fa-copyright"></i></span>
+        <span class="nav-label">ម៉ាកយីហោ</span>
+      </button>
+      <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn">
+        <span class="nav-icon"><i class="fa-solid fa-warehouse"></i></span>
+        <span class="nav-label">ស្តុក</span>
+      </button>
+
+      <div class="sb-section" style="margin-top:.6rem;">អតិថិជន &amp; លក់</div>
+      <button onclick="switchTab('orders')" id="nav-orders" class="nav-btn">
+        <span class="nav-icon"><i class="fa-solid fa-shopping-cart"></i></span>
+        <span class="nav-label">ការបញ្ជាទិញ</span>
+      </button>
+      <button onclick="switchTab('customers')" id="nav-customers" class="nav-btn">
+        <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+        <span class="nav-label">អតិថិជន</span>
+      </button>
+      <button onclick="switchTab('warranty')" id="nav-warranty" class="nav-btn">
+        <span class="nav-icon"><i class="fa-solid fa-shield-halved"></i></span>
+        <span class="nav-label">ការធានា</span>
+      </button>
+      <button onclick="switchTab('notifications')" id="nav-notifications" class="nav-btn" style="position:relative;">
+        <span class="nav-icon"><i class="fa-solid fa-bell"></i></span>
+        <span class="nav-label">ការជូនដំណឹង</span>
+        <span id="notif-badge" class="nav-badge hidden">0</span>
+      </button>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="sb-user-card">
+        <div class="sb-avatar">A</div>
+        <div style="flex:1;min-width:0;">
+          <div class="sb-user-name" id="user-email-display">admin@khtech.com</div>
+          <div class="sb-user-role">អ្នកគ្រប់គ្រងជាន់ខ្ពស់</div>
+        </div>
+      </div>
+      <button id="btn-logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <span>ចាកចេញ</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="mcontent">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="ham-btn" onclick="openSB()" id="hamburger-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="page-title" id="page-title">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="tb-icon-btn" onclick="switchTab('notifications')" title="ការជូនដំណឹង">
+          <i class="fa-solid fa-bell"></i>
+        </div>
+        <div class="tb-avatar">A</div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <div id="content-area" class="carea">
+
+      <!-- ─── DASHBOARD ─── -->
+      <section id="tab-dashboard" class="ain">
+        <div id="stock-alerts-area"></div>
+        <div class="sgrid">
+          <div class="scard scard-green">
+            <div class="scard-header">
+              <div class="scard-label">ចំណូលសរុប</div>
+              <div class="scard-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+            </div>
+            <div class="scard-val" id="stat-revenue">$0.00</div>
+            <div class="scard-sub">Completed orders only</div>
+          </div>
+          <div class="scard scard-blue">
+            <div class="scard-header">
+              <div class="scard-label">ការបញ្ជាទិញ</div>
+              <div class="scard-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+            </div>
+            <div class="scard-val" id="stat-orders">0</div>
+            <div class="scard-sub">Total orders</div>
+          </div>
+          <div class="scard scard-violet">
+            <div class="scard-header">
+              <div class="scard-label">ផលិតផល</div>
+              <div class="scard-icon"><i class="fa-solid fa-box"></i></div>
+            </div>
+            <div class="scard-val" id="stat-products">0</div>
+            <div class="scard-sub">In catalogue</div>
+          </div>
+          <div class="scard scard-amber">
+            <div class="scard-header">
+              <div class="scard-label">អតិថិជន</div>
+              <div class="scard-icon"><i class="fa-solid fa-users"></i></div>
+            </div>
+            <div class="scard-val" id="stat-customers">0</div>
+            <div class="scard-sub">Registered</div>
+          </div>
+        </div>
+        <div class="sc">
+          <div class="sc-head">
+            <span class="sc-title">ការបញ្ជាទិញថ្មីៗ</span>
+            <button class="sc-action" onclick="switchTab('orders')">មើលទាំងអស់ →</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="dt">
+              <thead><tr>
+                <th>លេខកូដ</th><th>អតិថិជន</th><th>តម្លៃ</th><th>ស្ថានភាព</th><th>កាលបរិច្ឆេទ</th>
+              </tr></thead>
+              <tbody id="dashboard-orders-rows">
+                <tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-inbox"></i></div><div class="empty-text">មិនទាន់មានទិន្នន័យ</div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── PRODUCTS ─── -->
+      <section id="tab-products" class="hidden">
+        <div class="toolbar">
+          <div class="search-wrap">
+            <span class="search-ico"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="text" id="product-search" oninput="renderProducts()" class="sinp" placeholder="ស្វែងរកផលិតផល...">
+          </div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-left:auto;flex-wrap:wrap;">
+            <button onclick="generate100Products()" class="btn btn-dark">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> បង្កើត ១០០ ទំនិញ
+            </button>
+            <button id="btn-bulk-delete" onclick="bulkDeleteProducts()" class="btn btn-rose hidden">
+              <i class="fa-solid fa-trash-can"></i> លុបដែលបានជ្រើសរើស (<span id="selected-count">0</span>)
+            </button>
+            <button onclick="openProductModal()" class="btn btn-ind">
+              <i class="fa-solid fa-plus"></i> បន្ថែមផលិតផលថ្មី
+            </button>
+          </div>
+        </div>
+        <div class="sc">
+          <div style="overflow-x:auto;">
+            <table class="dt">
+              <thead><tr>
+                <th class="c" style="width:44px;">
+                  <label class="cb-wrap"><input type="checkbox" id="cb-select-all" class="cb-inp" onchange="toggleSelectAllProducts(this)"></label>
+                </th>
+                <th>រូបភាព</th><th>ឈ្មោះ</th><th>ប្រភេទ / ម៉ាក</th><th>តម្លៃ</th><th>Options</th><th>ស្តុក</th><th class="r">Actions</th>
+              </tr></thead>
+              <tbody id="product-table-rows">
+                <tr><td colspan="8"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-box-open"></i></div><div class="empty-text">មិនទាន់មានផលិតផល</div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── CATEGORIES ─── -->
+      <section id="tab-categories" class="hidden">
+        <div class="tcol">
+          <div class="fcard">
+            <div class="fsec">
+              <div class="fstitle">បង្កើតប្រភេទថ្មី</div>
+              <form id="category-form">
+                <input type="hidden" id="category-edit-id">
+                <div class="fgroup">
+                  <label class="flabel">ឈ្មោះប្រភេទ <span>*</span></label>
+                  <input type="text" id="category-name" required class="fi" placeholder="ឧ. Laptop, Smartphone">
+                </div>
+                <div class="fgroup">
+                  <label class="flabel">ការពិពណ៌នា / Slug</label>
+                  <input type="text" id="category-desc" class="fi" placeholder="ការពិពណ៌នា...">
+                </div>
+                <div style="display:flex;gap:.55rem;margin-top:.65rem;">
+                  <button type="submit" class="btn btn-ind" style="flex:1;justify-content:center;">រក្សាទុក</button>
+                  <button type="button" onclick="resetCategoryForm()" class="btn btn-ghost">សម្អាត</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="sc">
+            <div style="overflow-x:auto;">
+              <table class="dt">
+                <thead><tr><th>ឈ្មោះប្រភេទ</th><th>ការពិពណ៌នា</th><th class="r">Actions</th></tr></thead>
+                <tbody id="category-table-rows">
+                  <tr><td colspan="3"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-tags"></i></div><div class="empty-text">មិនទាន់មានប្រភេទ</div></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── BRANDS ─── -->
+      <section id="tab-brands" class="hidden">
+        <div class="tcol">
+          <div class="fcard">
+            <div class="fsec">
+              <div class="fstitle">បង្កើតម៉ាកថ្មី</div>
+              <form id="brand-form">
+                <input type="hidden" id="brand-edit-id">
+                <div class="fgroup">
+                  <label class="flabel">ឈ្មោះម៉ាក <span>*</span></label>
+                  <input type="text" id="brand-name" required class="fi" placeholder="ឧ. Apple, Samsung">
+                </div>
+                <div style="display:flex;gap:.55rem;margin-top:.65rem;">
+                  <button type="submit" class="btn btn-ind" style="flex:1;justify-content:center;">រក្សាទុក</button>
+                  <button type="button" onclick="resetBrandForm()" class="btn btn-ghost">សម្អាត</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="sc">
+            <div style="overflow-x:auto;">
+              <table class="dt">
+                <thead><tr><th>ឈ្មោះម៉ាក</th><th class="r">Actions</th></tr></thead>
+                <tbody id="brand-table-rows">
+                  <tr><td colspan="2"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-copyright"></i></div><div class="empty-text">មិនទាន់មានម៉ាក</div></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── INVENTORY ─── -->
+      <section id="tab-inventory" class="hidden">
+        <div class="ibox"><i class="fa-solid fa-circle-info"></i><span>ធ្វើបច្ចុប្បន្នភាពចំនួនស្តុកផលិតផលនីមួយៗបានយ៉ាងលឿននៅទីនេះ។</span></div>
+        <div class="sc">
+          <div style="overflow-x:auto;">
+            <table class="dt">
+              <thead><tr><th>ផលិតផល</th><th>ស្ថានភាព</th><th>ចំនួន</th><th class="r">ធ្វើបច្ចុប្បន្នភាព</th></tr></thead>
+              <tbody id="inventory-table-rows">
+                <tr><td colspan="4"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-warehouse"></i></div><div class="empty-text">មិនទាន់មានផលិតផល</div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── ORDERS ─── -->
+      <section id="tab-orders" class="hidden">
+        <div style="display:flex; justify-content:flex-end; margin-bottom: .85rem;">
+          <button onclick="exportOrdersToCSV()" class="btn btn-sm btn-green">
+            <i class="fa-solid fa-file-excel"></i> ទាញយករាយការណ៍ (Excel)
+          </button>
+        </div>
+        <div class="sc">
+          <div style="overflow-x:auto;">
+            <table class="dt">
+              <thead><tr><th>លេខកូដ</th><th>អតិថិជន</th><th>ទំនិញ</th><th>សរុប</th><th>ស្ថានភាព</th><th class="r">ផ្លាស់ប្តូរ</th></tr></thead>
+              <tbody id="orders-table-rows">
+                <tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-cart-shopping"></i></div><div class="empty-text">គ្មានការបញ្ជាទិញ</div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── CUSTOMERS ─── -->
+      <section id="tab-customers" class="hidden">
+        <div class="sc">
+          <div style="overflow-x:auto;">
+            <table class="dt">
+              <thead><tr>
+                <th>ព័ត៌មានអតិថិជន</th>
+                <th>អ៊ីមែល / ទូរស័ព្ទ</th>
+                <th>អាសយដ្ឋាន</th>
+                <th>ប្រវត្តិការទិញ</th>
+                <th>ចំណាយសរុប</th>
+                <th>ថ្ងៃចុះឈ្មោះ</th>
+              </tr></thead>
+              <tbody id="customers-table-rows">
+                <tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-users"></i></div><div class="empty-text">មិនទាន់មានអតិថិជន</div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── WARRANTY ─── -->
+      <section id="tab-warranty" class="hidden">
+        <div class="tcol">
+          <div class="fcard">
+            <div class="fsec">
+              <div class="fstitle">ចេញប័ណ្ណធានា</div>
+              <form id="warranty-form">
+                <div class="fgroup">
+                  <label class="flabel">Serial / IMEI <span>*</span></label>
+                  <input type="text" id="warranty-serial" required class="fi" placeholder="SN / IMEI...">
+                </div>
+                <div class="fgroup">
+                  <label class="flabel">ផលិតផល <span>*</span></label>
+                  <select id="warranty-product-id" required class="fi fi-sel">
+                    <option value="">-- ជ្រើសរើស --</option>
+                  </select>
+                </div>
+                <div class="fgroup">
+                  <label class="flabel">ឈ្មោះអតិថិជន <span>*</span></label>
+                  <input type="text" id="warranty-customer" required class="fi" placeholder="ឈ្មោះ...">
+                </div>
+                <div class="fgroup">
+                  <label class="flabel">រយៈពេល (ខែ) <span>*</span></label>
+                  <input type="number" id="warranty-months" value="12" required class="fi">
+                </div>
+                <button type="submit" class="btn btn-ind" style="width:100%;justify-content:center;margin-top:.35rem;">
+                  <i class="fa-solid fa-shield-check"></i> ចេញប័ណ្ណធានា
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="sc">
+            <div style="overflow-x:auto;">
+              <table class="dt">
+                <thead><tr><th>Serial / IMEI</th><th>ផលិតផល / អតិថិជន</th><th>ថ្ងៃផុតកំណត់</th><th>ស្ថានភាព</th></tr></thead>
+                <tbody id="warranty-table-rows">
+                  <tr><td colspan="4"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="empty-text">មិនទាន់មានប័ណ្ណ</div></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── NOTIFICATIONS ─── -->
+      <section id="tab-notifications" class="hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+          <div style="font-size:.68rem;font-weight:700;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;">System Event Log</div>
+          <button onclick="clearSystemNotifications()" class="btn btn-xs btn-rose">
+            <i class="fa-solid fa-trash"></i> លុបទាំងអស់
+          </button>
+        </div>
+        <div id="notifications-log-list"></div>
+      </section>
+
+    </div><!-- /carea -->
+  </div><!-- /mcontent -->
+</div><!-- /main-view -->
+
+<!-- ═══════════════════════════════════════════════
+     PRODUCT MODAL
+═══════════════════════════════════════════════ -->
+<div id="product-modal" class="hidden">
+  <div class="mpanel">
+    <div class="mhead">
+      <span class="mtitle" id="product-modal-title">បន្ថែមផលិតផលថ្មី</span>
+      <button onclick="closeProductModal()" class="mclose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="product-form">
+      <div class="mbody">
+        <input type="hidden" id="product-edit-id">
+        <div class="frow">
+          <div class="fgroup">
+            <label class="flabel">ឈ្មោះផលិតផល <span>*</span></label>
+            <input type="text" id="p-name" required class="fi" placeholder="ឧ. iPhone 15 Pro Max">
+          </div>
+          <div class="fgroup">
+            <label class="flabel">តម្លៃ ($ USD) <span>*</span></label>
+            <input type="number" step="0.01" id="p-price" required class="fi" placeholder="0.00">
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fgroup">
+            <label class="flabel">ប្រភេទ <span>*</span></label>
+            <select id="p-category" required class="fi fi-sel"><option value="">-- ជ្រើសរើស --</option></select>
+          </div>
+          <div class="fgroup">
+            <label class="flabel">ម៉ាកយីហោ <span>*</span></label>
+            <select id="p-brand" required class="fi fi-sel"><option value="">-- ជ្រើសរើស --</option></select>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fgroup">
+            <label class="flabel">ចំនួនស្តុក <span>*</span></label>
+            <input type="number" id="p-stock" value="10" required class="fi">
+          </div>
+          <div class="fgroup">
+            <label class="flabel">URL រូបភាព <span>*</span></label>
+            <input type="text" id="p-image-url" required class="fi" placeholder="https://...">
+          </div>
+        </div>
+        <div class="fgroup">
+          <label class="flabel">Options <span style="color:var(--t3);font-weight:400;">(បំបែកដោយ ,)</span></label>
+          <input type="text" id="p-options" class="fi" placeholder="RAM: 8GB, Storage: 256GB, Color: Black">
+        </div>
+        <div class="fgroup">
+          <label class="flabel">ការពិពណ៌នា</label>
+          <textarea id="p-desc" class="fi fi-ta" placeholder="ព័ត៌មានលម្អិត..."></textarea>
+        </div>
+      </div>
+      <div class="mfoot">
+        <button type="button" onclick="closeProductModal()" class="btn btn-ghost">បោះបង់</button>
+        <button type="submit" class="btn btn-ind">
+          <i class="fa-solid fa-floppy-disk"></i> រក្សាទុក
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     GLOBAL SCRIPTS (UI helpers only)
+═══════════════════════════════════════════════ -->
+<script>
+function openSB()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('mov').classList.add('active'); }
+function closeSB() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mov').classList.remove('active'); }
+document.getElementById('product-modal').addEventListener('click', function(e) {
+  if (e.target === this && window.closeProductModal) window.closeProductModal();
+});
+</script>
+
+<!-- ═══════════════════════════════════════════════
+     FIREBASE + APP LOGIC  (UNCHANGED)
+═══════════════════════════════════════════════ -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, doc, addDoc, setDoc, getDocs, deleteDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCTlsm3Qst0HPvNj5Fm97AfxgzbKfZSlb8",
+        authDomain: "khtechstore-8cfa7.firebaseapp.com",
+        projectId: "khtechstore-8cfa7",
+        storageBucket: "khtechstore-8cfa7.firebasestorage.app",
+        messagingSenderId: "987496464830",
+        appId: "1:987496464830:web:208da3a42269a257f539ef"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let appState = { products:[], categories:[], brands:[], orders:[], customers:[], warranties:[], notifications:[] };
+    let selectedProductIds = new Set(); 
+
+    function safeFormatDate(dateString) {
+        if (!dateString) return '';
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return String(dateString).substring(0, 10);
+            return date.toLocaleDateString('km-KH');
+        } catch (e) { return String(dateString).substring(0, 10); }
+    }
+
+    window.showToast = function(message, type='success') {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div');
+        const cls = {success:'toast-s', error:'toast-e', warning:'toast-w'};
+        const ico = {success:'fa-check-circle', error:'fa-exclamation-circle', warning:'fa-triangle-exclamation'};
+        t.className = `toast ${cls[type]||'toast-s'}`;
+        t.innerHTML = `<div class="t-icon"><i class="fa-solid ${ico[type]||ico.success}"></i></div><div class="t-body"><div class="t-msg">${message}</div></div>`;
+        c.appendChild(t);
+        requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+        setTimeout(()=>{t.classList.remove('show');t.classList.add('hide');setTimeout(()=>t.remove(),400)},4000);
+    };
+
+    onAuthStateChanged(auth, (user) => {
+        const lv = document.getElementById('login-view');
+        const mv = document.getElementById('main-view');
+        if(user){
+            lv.classList.add('hidden');
+            mv.classList.remove('hidden');
+            mv.style.display = 'flex'; 
+            document.getElementById('user-email-display').innerText = user.email;
+            appState = { products:[], categories:[], brands:[], orders:[], customers:[], warranties:[], notifications:[] };
+            initializeRealtimeSyncs();
+        } else {
+            lv.classList.remove('hidden');
+            mv.classList.add('hidden');
+            mv.style.display = 'none';
+            appState = { products:[], categories:[], brands:[], orders:[], customers:[], warranties:[], notifications:[] };
+        }
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async(e)=>{
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const btn = document.getElementById('btn-login-submit');
+        btn.disabled=true; btn.innerHTML=`<i class="fa-solid fa-spinner fa-spin"></i> <span>កំពុងផ្ទៀងផ្ទាត់...</span>`;
+        try { await signInWithEmailAndPassword(auth,email,password); showToast("ចូលប្រព័ន្ធជោគជ័យ។"); }
+        catch(error){ showToast("ការចូលមិនត្រឹមត្រូវ: "+error.message,"error"); }
+        finally{ btn.disabled=false; btn.innerHTML=`<span>ចូលប្រើប្រាស់</span><i class="fa-solid fa-arrow-right"></i>`; }
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', async()=>{
+        if(confirm("តើអ្នកពិតជាចង់ចាកចេញពីប្រព័ន្ធមែនទេ?")){ await signOut(auth); }
+    });
+
+    window.switchTab = function(tabId) {
+        const tabs=['dashboard','products','categories','brands','inventory','orders','customers','warranty','notifications'];
+        tabs.forEach(t=>{
+            const el=document.getElementById(`tab-${t}`);
+            const nav=document.getElementById(`nav-${t}`);
+            if(el)el.classList.add('hidden');
+            if(nav)nav.classList.remove('active-nav');
+        });
+        const ae=document.getElementById(`tab-${tabId}`);
+        if(ae){ae.classList.remove('hidden');ae.classList.add('ain');}
+        const an=document.getElementById(`nav-${tabId}`);
+        if(an)an.classList.add('active-nav');
+        const titles={dashboard:'Dashboard',products:'ផលិតផល',categories:'ប្រភេទ',brands:'ម៉ាកយីហោ',inventory:'ស្តុក',orders:'ការបញ្ជាទិញ',customers:'អតិថិជន',warranty:'ការធានា',notifications:'ការជូនដំណឹង'};
+        document.getElementById('page-title').innerText = titles[tabId]||tabId;
+        closeSB();
+    };
+
+    function initializeRealtimeSyncs() {
+        onSnapshot(collection(db,"categories"), (snap)=>{
+            appState.categories=[];
+            snap.forEach(d=>appState.categories.push({id:d.id,...d.data()}));
+            appState.categories.sort((a,b) => (a.name||'').localeCompare(b.name||''));
+            renderCategories(); populateDropdowns();
+        });
+        onSnapshot(collection(db,"brands"), (snap)=>{
+            appState.brands=[];
+            snap.forEach(d=>appState.brands.push({id:d.id,...d.data()}));
+            appState.brands.sort((a,b) => (a.name||'').localeCompare(b.name||''));
+            renderBrands(); populateDropdowns();
+        });
+        onSnapshot(collection(db,"products"), (snap)=>{
+            appState.products=[];
+            snap.forEach(d=>appState.products.push({id:d.id,...d.data()}));
+            appState.products.sort((a,b) => new Date(b.createdAt||0) - new Date(a.createdAt||0));
+            updateDeleteButtonVisibility(); 
+            renderProducts(); renderInventory(); updateDashboardStats(); populateProductWarrantyDropdown(); renderStockAlerts();
+        });
+        onSnapshot(collection(db,"orders"), (snap)=>{
+            appState.orders=[];
+            snap.forEach(d=>appState.orders.push({id:d.id,...d.data()}));
+            appState.orders.sort((a,b) => new Date(b.createdAt||0) - new Date(a.createdAt||0));
+            renderOrders(); updateDashboardStats();
+        },(err)=>{ console.error("Error fetching orders:", err); });
+        
+        onSnapshot(collection(db,"customers"), (snap)=>{
+            appState.customers=[];
+            snap.forEach(d=>appState.customers.push({id:d.id,...d.data()}));
+            renderCustomers(); updateDashboardStats();
+        },(err)=>{ console.error("Error fetching customers:", err); });
+
+        onSnapshot(collection(db,"warranties"), (snap)=>{
+            appState.warranties=[];
+            snap.forEach(d=>appState.warranties.push({id:d.id,...d.data()}));
+            appState.warranties.sort((a,b) => new Date(b.createdAt||0) - new Date(a.createdAt||0));
+            renderWarranties();
+        });
+        onSnapshot(collection(db,"notifications"), (snap)=>{
+            appState.notifications=[];
+            snap.forEach(d=>appState.notifications.push({id:d.id,...d.data()}));
+            appState.notifications.sort((a,b) => new Date(b.timestamp||0) - new Date(a.timestamp||0));
+            renderSystemNotificationsLog();
+        });
+    }
+
+    async function logSystemEvent(t,d){
+        try{ await addDoc(collection(db,"notifications"),{title:t,description:d,timestamp:new Date().toISOString(),read:false}); }
+        catch(e){ console.error(e); }
+    }
+
+    function populateDropdowns(){
+        const cs=document.getElementById('p-category');
+        const bs=document.getElementById('p-brand');
+        if(!cs||!bs)return;
+        cs.innerHTML='<option value="">-- ជ្រើសរើសប្រភេទ --</option>';
+        appState.categories.forEach(c=>{cs.innerHTML+=`<option value="${c.name}">${c.name}</option>`;});
+        bs.innerHTML='<option value="">-- ជ្រើសរើសម៉ាក --</option>';
+        appState.brands.forEach(b=>{bs.innerHTML+=`<option value="${b.name}">${b.name}</option>`;});
+    }
+
+    function populateProductWarrantyDropdown(){
+        const w=document.getElementById('warranty-product-id');
+        if(!w)return;
+        w.innerHTML='<option value="">-- ជ្រើសរើសផលិតផល --</option>';
+        appState.products.forEach(p=>{w.innerHTML+=`<option value="${p.id}">${p.name}</option>`;});
+    }
+
+    function renderStockAlerts(){
+        const a=document.getElementById('stock-alerts-area');
+        if(!a)return;
+        const out=appState.products.filter(p=>(p.stock||0)===0);
+        const low=appState.products.filter(p=>(p.stock||0)>0&&(p.stock||0)<=3);
+        let h='';
+        if(out.length) h+=`<div class="alert alert-r"><i class="fa-solid fa-triangle-exclamation"></i><strong>ផលិតផលអស់ស្តុក!</strong>&nbsp;${out.map(p=>p.name).join(', ')}</div>`;
+        if(low.length) h+=`<div class="alert alert-a"><i class="fa-solid fa-box-open"></i><strong>ស្តុកជិតអស់:</strong>&nbsp;${low.map(p=>`${p.name} (${p.stock})`).join(', ')}</div>`;
+        a.innerHTML=h;
+    }
+
+    function updateDashboardStats(){
+        let rev=0;
+        appState.orders.forEach(o=>{if(o.status==='Completed')rev+=parseFloat(o.total||0);});
+        document.getElementById('stat-revenue').innerText=`$${rev.toFixed(2)}`;
+        document.getElementById('stat-orders').innerText=appState.orders.length;
+        document.getElementById('stat-products').innerText=appState.products.length;
+        document.getElementById('stat-customers').innerText=appState.customers.length;
+        
+        const db2=document.getElementById('dashboard-orders-rows');
+        if(!db2)return;
+        if(!appState.orders.length){db2.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-inbox"></i></div><div class="empty-text">មិនទាន់មានការបញ្ជាទិញ</div></div></td></tr>`;return;}
+        let h='';
+        appState.orders.slice(0,5).forEach(o=>{
+            const bc=o.status==='Completed'?'bg':o.status==='Pending'?'ba':'br';
+            h+=`<tr>
+                <td><span class="cell-mono">#${o.id?o.id.substring(0,6).toUpperCase():'N/A'}</span></td>
+                <td><span class="cell-primary">${o.customerName}</span></td>
+                <td><span class="cell-primary">$${parseFloat(o.total||0).toFixed(2)}</span></td>
+                <td><span class="badge ${bc}">${o.status}</span></td>
+                <td style="font-size:.75rem;color:var(--t3);">${safeFormatDate(o.createdAt)}</td>
+            </tr>`;
+        });
+        db2.innerHTML=h;
+    }
+
+    window.toggleProductSelection = function(checkbox, productId) {
+        if(checkbox.checked) { selectedProductIds.add(productId); } 
+        else { selectedProductIds.delete(productId); }
+        updateDeleteButtonVisibility();
+    };
+
+    window.toggleSelectAllProducts = function(selectAllCheckbox) {
+        const allCheckboxes = document.querySelectorAll('.cb-product');
+        const sv = document.getElementById('product-search').value.toLowerCase();
+        const filteredProducts = appState.products.filter(p => p.name.toLowerCase().includes(sv) || (p.category && p.category.toLowerCase().includes(sv)));
+
+        if(selectAllCheckbox.checked) {
+            filteredProducts.forEach(p => selectedProductIds.add(p.id));
+            allCheckboxes.forEach(cb => cb.checked = true);
+        } else {
+            selectedProductIds.clear();
+            allCheckboxes.forEach(cb => cb.checked = false);
+        }
+        updateDeleteButtonVisibility();
+    };
+
+    function updateDeleteButtonVisibility() {
+        const btn = document.getElementById('btn-bulk-delete');
+        const countSpan = document.getElementById('selected-count');
+        
+        if(selectedProductIds.size === 0) {
+            document.getElementById('cb-select-all').checked = false;
+        }
+
+        if(selectedProductIds.size > 0) {
+            btn.classList.remove('hidden');
+            countSpan.innerText = selectedProductIds.size;
+        } else {
+            btn.classList.add('hidden');
+        }
+    }
+
+    window.bulkDeleteProducts = async function() {
+        if(selectedProductIds.size === 0) return;
+        if(!confirm(`តើអ្នកពិតជាចង់លុបផលិតផលចំនួន ${selectedProductIds.size} មែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។`)) return;
+
+        showToast("កំពុងលុប... សូមរង់ចាំ", "warning");
+        let deletedCount = 0;
+
+        try {
+            for (let id of selectedProductIds) {
+                await deleteDoc(doc(db, "products", id));
+                deletedCount++;
+            }
+            showToast(`បានលុបផលិតផលចំនួន ${deletedCount} ជោគជ័យ!`);
+            logSystemEvent("លុបផលិតផលច្រើន", `ផលិតផលចំនួន ${deletedCount} ត្រូវបានលុបចេញពីប្រព័ន្ធ។`);
+            
+            selectedProductIds.clear();
+            document.getElementById('cb-select-all').checked = false;
+            updateDeleteButtonVisibility();
+        } catch (error) {
+            showToast("មានបញ្ហាក្នុងការលុប: " + error.message, "error");
+        }
+    };
+
+    window.renderProducts = function(){
+        const c=document.getElementById('product-table-rows');
+        if(!c)return;
+        const sv=(document.getElementById('product-search').value||'').toLowerCase();
+        const f=appState.products.filter(p=>p.name.toLowerCase().includes(sv)||(p.category&&p.category.toLowerCase().includes(sv)));
+        
+        if(!f.length){
+            c.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div><div class="empty-text">រកមិនឃើញផលិតផល</div></div></td></tr>`;
+            document.getElementById('cb-select-all').disabled = true;
+            return;
+        }
+        
+        document.getElementById('cb-select-all').disabled = false;
+        const fb='https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=100&q=80';
+        let h='';
+        
+        f.forEach(p=>{
+            const chips=p.options?p.options.split(',').map(o=>`<span class="chip">${o.trim()}</span>`).join(' '):'<span style="color:var(--t3);font-size:.72rem;">—</span>';
+            const s=p.stock||0;
+            const sc2=s===0?'stk-out':s<=3?'stk-low':'stk-ok';
+            const sl=s===0?'អស់ស្តុក':s<=3?`${s} (ជិតអស់)`:`${s} គ្រឿង`;
+            const isChecked = selectedProductIds.has(p.id) ? 'checked' : '';
+
+            h+=`<tr>
+                <td class="c">
+                    <label class="cb-wrap"><input type="checkbox" class="cb-inp cb-product" value="${p.id}" onchange="toggleProductSelection(this, '${p.id}')" ${isChecked}></label>
+                </td>
+                <td><img src="${p.imageUrl||fb}" class="pthumb" onerror="this.src='${fb}'"></td>
+                <td>
+                    <div class="cell-primary">${p.name}</div>
+                    <div style="font-size:.7rem;color:var(--t3);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${p.description||'—'}</div>
+                </td>
+                <td>
+                    <div style="font-weight:600;color:var(--t1);font-size:.78rem;">${p.category||'—'}</div>
+                    <div style="font-size:.68rem;color:var(--t3);margin-top:2px;">${p.brand||'—'}</div>
+                </td>
+                <td><span class="cell-primary">$${parseFloat(p.price||0).toFixed(2)}</span></td>
+                <td><div style="display:flex;flex-wrap:wrap;gap:3px;">${chips}</div></td>
+                <td><span class="stk ${sc2}">${sl}</span></td>
+                <td class="r" style="white-space:nowrap;">
+                    <button onclick="editProduct('${p.id}')" class="btn btn-xs btn-blue" style="margin-right:4px;"><i class="fa-solid fa-pen"></i></button>
+                    <button onclick="deleteProduct('${p.id}', '${p.name}')" class="btn btn-xs btn-rose"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
+        c.innerHTML=h;
+        
+        const allVisibleIds = f.map(p => p.id);
+        const allSelected = allVisibleIds.length > 0 && allVisibleIds.every(id => selectedProductIds.has(id));
+        document.getElementById('cb-select-all').checked = allSelected;
+    };
+
+    function renderCategories(){
+        const r=document.getElementById('category-table-rows');
+        if(!r)return;
+        if(!appState.categories.length){r.innerHTML=`<tr><td colspan="3"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-tags"></i></div><div class="empty-text">មិនទាន់មានប្រភេទ</div></div></td></tr>`;return;}
+        let h='';
+        appState.categories.forEach(c=>{
+            h+=`<tr>
+                <td class="cell-primary">${c.name}</td>
+                <td style="color:var(--t3);font-size:.76rem;">${c.description||'—'}</td>
+                <td class="r" style="white-space:nowrap;">
+                    <button onclick="editCategory('${c.id}','${c.name}','${c.description||''}')" class="btn btn-xs btn-blue" style="margin-right:4px;"><i class="fa-solid fa-edit"></i></button>
+                    <button onclick="deleteCategory('${c.id}')" class="btn btn-xs btn-rose"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
+        r.innerHTML=h;
+    }
+
+    function renderBrands(){
+        const r=document.getElementById('brand-table-rows');
+        if(!r)return;
+        if(!appState.brands.length){r.innerHTML=`<tr><td colspan="2"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-copyright"></i></div><div class="empty-text">មិនទាន់មានម៉ាក</div></div></td></tr>`;return;}
+        let h='';
+        appState.brands.forEach(b=>{
+            h+=`<tr>
+                <td class="cell-primary">${b.name}</td>
+                <td class="r" style="white-space:nowrap;">
+                    <button onclick="editBrand('${b.id}','${b.name}')" class="btn btn-xs btn-blue" style="margin-right:4px;"><i class="fa-solid fa-edit"></i></button>
+                    <button onclick="deleteBrand('${b.id}')" class="btn btn-xs btn-rose"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
+        r.innerHTML=h;
+    }
+
+    function renderInventory(){
+        const r=document.getElementById('inventory-table-rows');
+        if(!r)return;
+        if(!appState.products.length){r.innerHTML=`<tr><td colspan="4"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-warehouse"></i></div><div class="empty-text">មិនទាន់មានផលិតផល</div></div></td></tr>`;return;}
+        let h='';
+        appState.products.forEach(p=>{
+            const s=p.stock||0;
+            const sb=s===0?`<span class="badge br">អស់ស្តុក</span>`:s<=5?`<span class="badge ba">ជិតអស់</span>`:`<span class="badge bg">គ្រប់គ្រាន់</span>`;
+            h+=`<tr>
+                <td>
+                    <div class="cell-primary">${p.name}</div>
+                    <div style="font-size:.68rem;color:var(--t3);margin-top:2px;">${p.category||'—'}</div>
+                </td>
+                <td>${sb}</td>
+                <td><span style="font-size:1rem;font-weight:800;color:var(--t1);">${s}</span> <span style="font-size:.68rem;color:var(--t3);">គ្រឿង</span></td>
+                <td class="r">
+                    <div style="display:inline-flex;align-items:center;gap:.5rem;">
+                        <input type="number" id="inv-input-${p.id}" value="${s}" class="iinp">
+                        <button onclick="quickUpdateStock('${p.id}')" class="btn btn-sm btn-dark"><i class="fa-solid fa-rotate"></i> Update</button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+        r.innerHTML=h;
+    }
+
+    function parseOrderItems(itemsString) {
+        try {
+            if (itemsString.startsWith('[')) return JSON.parse(itemsString);
+        } catch (e) {}
+        let parsedItems = [];
+        let itemsArray = (itemsString || "").split(',');
+        for (let item of itemsArray) {
+            let match = item.match(/(.+?)\s*\(x(\d+)\)/);
+            if (match) parsedItems.push({ name: match[1].trim(), qty: parseInt(match[2]), id: null });
+        }
+        return parsedItems;
+    }
+
+    function renderOrders(){
+        const r=document.getElementById('orders-table-rows');
+        if(!r)return;
+        if(!appState.orders.length){r.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-cart-shopping"></i></div><div class="empty-text">គ្មានការបញ្ជាទិញ</div></div></td></tr>`;return;}
+        let h='';
+        appState.orders.forEach(o=>{
+            const bc=o.status==='Completed'?'bg':o.status==='Pending'?'ba':'br';
+            let mapButton = o.locationUrl ? `<a href="${o.locationUrl}" target="_blank" class="btn btn-xs btn-blue" style="margin-top:4px;display:inline-flex;padding:2px 6px;"><i class="fa-solid fa-map-location-dot" style="margin-right:4px;"></i> មើលផែនទី</a>` : '';
+            let displayItems = "";
+            let itemsList = parseOrderItems(o.items);
+            if(itemsList.length > 0) { displayItems = itemsList.map(item => `${item.name} <span style="color:var(--brand);font-weight:700;">(x${item.qty})</span>`).join('<br>'); } 
+            else { displayItems = o.items; }
+
+            h+=`<tr>
+                <td><span class="cell-mono">#${o.id?o.id.toUpperCase().substring(0,8):'N/A'}</span></td>
+                <td>
+                    <div class="cell-primary">${o.customerName}</div>
+                    <div style="font-size:.7rem;color:var(--t3);margin-top:2px;">${o.phone||''} ${o.address?'· '+o.address:''}</div>
+                    ${mapButton}
+                </td>
+                <td style="font-size:.75rem;line-height:1.5;">${displayItems}</td>
+                <td><span class="cell-primary">$${parseFloat(o.total||0).toFixed(2)}</span></td>
+                <td><span class="badge ${bc}">${o.status}</span></td>
+                <td class="r">
+                    <select onchange="updateOrderStatus('${o.id}',this.value)" class="ssel">
+                        <option value="Pending" ${o.status==='Pending'?'selected':''}>Pending</option>
+                        <option value="Completed" ${o.status==='Completed'?'selected':''}>Completed</option>
+                        <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+                    </select>
+                </td>
+            </tr>`;
+        });
+        r.innerHTML=h;
+    }
+
+    window.updateOrderStatus = async function(id, ns) {
+        try {
+            const order = appState.orders.find(o => o.id === id);
+            if (!order) return;
+            const oldStatus = order.status;
+            const hasBeenDeducted = order.stockDeducted === true;
+
+            const processStock = async (isDeducting) => {
+                let itemsList = parseOrderItems(order.items);
+                for (let item of itemsList) {
+                    let product = item.id ? appState.products.find(p => p.id === item.id) : null;
+                    if (!product) product = appState.products.find(p => (p.name || "").trim().toLowerCase() === item.name.toLowerCase());
+
+                    if (product) {
+                        let newStock = isDeducting ? Math.max(0, (product.stock || 0) - item.qty) : (product.stock || 0) + item.qty;
+                        await setDoc(doc(db, "products", product.id), { stock: newStock }, { merge: true });
+                    } else {
+                        showToast(`រកមិនឃើញផលិតផល "${item.name}" ក្នុងប្រព័ន្ធឡើយ`, "warning");
+                    }
+                }
+            };
+
+            if (ns === 'Cancelled' && oldStatus !== 'Cancelled' && hasBeenDeducted) {
+                await processStock(false); 
+                await setDoc(doc(db, "orders", id), { stockDeducted: false }, { merge: true });
+                logSystemEvent("បង្វិលស្តុកត្រឡប់មកវិញ", `ការបញ្ជាទិញ #${id.substring(0,6).toUpperCase()} ត្រូវបានលុបចោល។`);
+            }
+            else if (oldStatus === 'Cancelled' && ns !== 'Cancelled' && !hasBeenDeducted) {
+                await processStock(true); 
+                await setDoc(doc(db, "orders", id), { stockDeducted: true }, { merge: true });
+                logSystemEvent("កាត់ស្តុក", `ការបញ្ជាទិញ #${id.substring(0,6).toUpperCase()} ត្រូវបានដំណើរការវិញ។`);
+            }
+
+            await setDoc(doc(db, "orders", id), { status: ns }, { merge: true });
+            showToast(`ស្ថានភាពការបញ្ជាទិញ → ${ns}`);
+            if (ns === 'Completed' && oldStatus !== 'Completed') logSystemEvent("បញ្ចប់ការបញ្ជាទិញ", `ការបញ្ជាទិញ #${id.substring(0,6).toUpperCase()} ប្រគល់ជោគជ័យ។`);
+            
+        } catch(e) { showToast("ប្រតិបត្តិការមានកំហុស", "error"); console.error(e); }
+    };
+
+    function renderCustomers(){
+        const r=document.getElementById('customers-table-rows');
+        if(!r)return;
+        if(!appState.customers.length){r.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-users"></i></div><div class="empty-text">គ្មានអតិថិជន</div></div></td></tr>`;return;}
+        let h='';
+        
+        appState.customers.forEach(c=>{
+            const safeName = c.name || c.email || 'អតិថិជនមិនស្គាល់ឈ្មោះ';
+            const safeEmail = c.email || 'គ្មានអុីមែល';
+            const safePhone = c.phone || c.contact || 'គ្មានលេខទូរស័ព្ទ';
+            
+            let cOrders = appState.orders.filter(o => (o.customerName && o.customerName === safeName) || (o.customerName && o.customerName === safeEmail) || (c.contact && o.customerName === c.contact));
+            
+            let totalSpent = 0; let completedCount = 0;
+            cOrders.forEach(o => { if(o.status === 'Completed') { totalSpent += parseFloat(o.total || 0); completedCount++; } });
+
+            const joinedDate = safeFormatDate(c.createdAt);
+            const fChar = safeName.charAt(0).toUpperCase();
+            let mapButton = c.locationUrl ? `<a href="${c.locationUrl}" target="_blank" class="btn btn-xs btn-ind" style="margin-top:4px;"><i class="fa-solid fa-location-dot" style="margin-right:4px;"></i> ផែនទី</a>` : '';
+
+            h+=`<tr>
+                <td>
+                    <div style="display:flex;align-items:center;gap:.6rem;">
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--brand-grad);display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:700;color:#fff;flex-shrink:0;">${fChar}</div>
+                        <div>
+                            <div class="cell-primary">${safeName}</div>
+                            <div style="font-size:.64rem;color:var(--brand);font-family:monospace;">${c.id.substring(0,8)}...</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div style="font-size:.76rem;"><i class="fa-solid fa-phone" style="font-size:9px;margin-right:4px;color:var(--t3);"></i>${safePhone}</div>
+                    <div style="font-size:.76rem;color:var(--t3);margin-top:2px;"><i class="fa-solid fa-envelope" style="font-size:9px;margin-right:4px;"></i>${safeEmail}</div>
+                </td>
+                <td>
+                    <div style="font-size:.76rem;color:var(--t2);max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${c.address||'—'}">${c.address||'—'}</div>
+                    ${mapButton}
+                </td>
+                <td>
+                    <div style="font-size:.76rem;font-weight:600;">បញ្ជាទិញ: <span class="cell-primary">${cOrders.length}</span> ដង</div>
+                    <div style="font-size:.68rem;color:var(--t3);margin-top:2px;">ជោគជ័យ: <span style="color:var(--green);">${completedCount}</span> ដង</div>
+                </td>
+                <td><span class="cell-primary" style="color:var(--green);font-size:.88rem;">$${totalSpent.toFixed(2)}</span></td>
+                <td style="font-size:.72rem;color:var(--t3);">${joinedDate}</td>
+            </tr>`;
+        });
+        r.innerHTML=h;
+    }
+
+    function renderWarranties(){
+        const r=document.getElementById('warranty-table-rows');
+        if(!r)return;
+        if(!appState.warranties.length){r.innerHTML=`<tr><td colspan="4"><div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="empty-text">មិនទាន់មានប័ណ្ណ</div></div></td></tr>`;return;}
+        let h='';
+        appState.warranties.forEach(w=>{
+            const exp=new Date(w.expiryDate)<new Date();
+            h+=`<tr>
+                <td><span class="cell-mono">${w.serialNumber}</span></td>
+                <td>
+                    <div class="cell-primary">${w.productName||'—'}</div>
+                    <div style="font-size:.7rem;color:var(--t3);margin-top:2px;">អតិថិជន: ${w.customerName}</div>
+                </td>
+                <td style="font-size:.76rem;">${w.expiryDate}</td>
+                <td><span class="badge ${exp?'br':'bg'}">${exp?'ហួសកំណត់':'កំពុងធានា'}</span></td>
+            </tr>`;
+        });
+        r.innerHTML=h;
+    }
+
+    function renderSystemNotificationsLog(){
+        const l=document.getElementById('notifications-log-list');
+        const b=document.getElementById('notif-badge');
+        if(!l)return;
+        if(!appState.notifications.length){
+            if(b)b.classList.add('hidden');
+            l.innerHTML=`<div class="notif-entry"><div class="notif-icon"><i class="fa-solid fa-inbox"></i></div><div><div class="notif-title" style="color:var(--t3);">គ្មានការជូនដំណឹង</div><div class="notif-desc">Event log is empty</div></div></div>`;
+            return;
+        }
+        if(b){b.innerText=appState.notifications.length;b.classList.remove('hidden');}
+        let h='';
+        appState.notifications.forEach(n=>{
+            h+=`<div class="notif-entry">
+                <div class="notif-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <div>
+                    <div class="notif-title">${n.title}</div>
+                    <div class="notif-desc">${n.description}</div>
+                    <div class="notif-time">${safeFormatDate(n.timestamp)}</div>
+                </div>
+            </div>`;
+        });
+        l.innerHTML=h;
+    }
+
+    window.openProductModal = function(){
+        document.getElementById('product-form').reset();
+        document.getElementById('product-edit-id').value='';
+        document.getElementById('product-modal-title').innerText='បន្ថែមផលិតផលថ្មី';
+        const m=document.getElementById('product-modal');
+        m.classList.remove('hidden');
+        requestAnimationFrame(()=>m.classList.add('mopen'));
+    };
+    window.closeProductModal = function(){
+        const m=document.getElementById('product-modal');
+        m.classList.remove('mopen');
+        setTimeout(()=>m.classList.add('hidden'),280);
+    };
+
+    document.getElementById('product-form').addEventListener('submit', async(e)=>{
+        e.preventDefault();
+        const eid = document.getElementById('product-edit-id').value;
+        const submitBtn = e.submitter; 
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true; submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> កំពុងដំណើរការ...`;
+
+        try {
+            const pd = {
+                name: document.getElementById('p-name').value.trim(),
+                price: parseFloat(document.getElementById('p-price').value || 0),
+                category: document.getElementById('p-category').value,
+                brand: document.getElementById('p-brand').value,
+                stock: parseInt(document.getElementById('p-stock').value || 0),
+                imageUrl: document.getElementById('p-image-url').value.trim(), 
+                options: document.getElementById('p-options').value.trim(),
+                description: document.getElementById('p-desc').value.trim(),
+                createdAt: new Date().toISOString()
+            };
+
+            if (eid) {
+                await setDoc(doc(db, "products", eid), pd, { merge: true });
+                showToast("បានកែប្រែផលិតផលជោគជ័យ។");
+            } else {
+                await addDoc(collection(db, "products"), pd);
+                showToast("បានបន្ថែមផលិតផលថ្មី!");
+            }
+            window.closeProductModal();
+        } catch(err) { showToast("ប្រតិបត្តិការបរាជ័យ: " + err.message, "error");
+        } finally { submitBtn.disabled = false; submitBtn.innerHTML = originalBtnText; }
+    });
+
+    window.editProduct = function(id){
+        const p=appState.products.find(i=>i.id===id);
+        if(!p)return;
+        document.getElementById('product-edit-id').value=p.id;
+        document.getElementById('p-name').value=p.name||'';
+        document.getElementById('p-price').value=p.price||0;
+        document.getElementById('p-category').value=p.category||'';
+        document.getElementById('p-brand').value=p.brand||'';
+        document.getElementById('p-stock').value=p.stock||0;
+        document.getElementById('p-image-url').value=p.imageUrl||'';
+        document.getElementById('p-options').value=p.options||'';
+        document.getElementById('p-desc').value=p.description||'';
+        document.getElementById('product-modal-title').innerText='កែប្រែផលិតផល';
+        const m=document.getElementById('product-modal');
+        m.classList.remove('hidden');
+        requestAnimationFrame(()=>m.classList.add('mopen'));
+    };
+
+    window.deleteProduct = async function(id,name){
+        if(confirm(`លុបផលិតផល "${name}"?`)){
+            try{await deleteDoc(doc(db,"products",id));showToast("បានលុបផលិតផល។");}
+            catch(e){showToast("មិនអាចលុបបាន","error");}
+        }
+    };
+
+    document.getElementById('category-form').addEventListener('submit',async(e)=>{
+        e.preventDefault();
+        const id=document.getElementById('category-edit-id').value;
+        const name=document.getElementById('category-name').value.trim();
+        const description=document.getElementById('category-desc').value.trim();
+        try{
+            if(id) await setDoc(doc(db,"categories",id),{name,description},{merge:true});
+            else await addDoc(collection(db,"categories"),{name,description});
+            showToast("ជោគជ័យ!"); resetCategoryForm();
+        }catch(err){showToast("កំហុស","error");}
+    });
+    window.editCategory=function(id,n,d){document.getElementById('category-edit-id').value=id;document.getElementById('category-name').value=n;document.getElementById('category-desc').value=d;};
+    window.deleteCategory=async function(id){if(confirm("លុប?")){await deleteDoc(doc(db,"categories",id));showToast("បានលុប");}};
+    window.resetCategoryForm=function(){document.getElementById('category-form').reset();document.getElementById('category-edit-id').value='';};
+
+    document.getElementById('brand-form').addEventListener('submit',async(e)=>{
+        e.preventDefault();
+        const id=document.getElementById('brand-edit-id').value;
+        const name=document.getElementById('brand-name').value.trim();
+        try{
+            if(id) await setDoc(doc(db,"brands",id),{name},{merge:true});
+            else await addDoc(collection(db,"brands"),{name});
+            showToast("ជោគជ័យ!"); resetBrandForm();
+        }catch(e){showToast("កំហុស","error");}
+    });
+    window.editBrand=function(id,n){document.getElementById('brand-edit-id').value=id;document.getElementById('brand-name').value=n;};
+    window.deleteBrand=async function(id){if(confirm("លុប?")){await deleteDoc(doc(db,"brands",id));showToast("បានលុប");}};
+    window.resetBrandForm=function(){document.getElementById('brand-form').reset();document.getElementById('brand-edit-id').value='';};
+
+    window.quickUpdateStock=async function(id){
+        const s=parseInt(document.getElementById(`inv-input-${id}`).value||0);
+        try{ await setDoc(doc(db,"products",id),{stock:s},{merge:true}); showToast(`ស្តុកបាន Update`); }catch(e){showToast("កំហុស","error");}
+    };
+
+    document.getElementById('warranty-form').addEventListener('submit',async(e)=>{
+        e.preventDefault();
+        const serial=document.getElementById('warranty-serial').value.trim();
+        const pid=document.getElementById('warranty-product-id').value;
+        const cname=document.getElementById('warranty-customer').value.trim();
+        const months=parseInt(document.getElementById('warranty-months').value||12);
+        const mp=appState.products.find(i=>i.id===pid);
+        const pd=new Date(); const ed=new Date(); ed.setMonth(pd.getMonth()+months);
+        const wd={serialNumber:serial,productId:pid,productName:mp?mp.name:'General',customerName:cname,purchaseDate:pd.toISOString().substring(0,10),expiryDate:ed.toISOString().substring(0,10),createdAt:new Date().toISOString()};
+        try{ await addDoc(collection(db,"warranties"),wd); showToast("ចេញប័ណ្ណជោគជ័យ!"); document.getElementById('warranty-form').reset(); }catch(err){showToast("កំហុស","error");}
+    });
+
+    window.clearSystemNotifications=async function(){
+        if(confirm("លុបទាំងអស់?")){ try{ for(let n of appState.notifications) await deleteDoc(doc(db,"notifications",n.id)); showToast("បានសម្អាត"); }catch(e){showToast("កំហុស","error");} }
+    };
+
+    window.exportOrdersToCSV = function() {
+        if(!appState.orders.length) return showToast("គ្មានទិន្នន័យ", "warning");
+        let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+        csvContent += "Order ID,Customer Name,Phone,Address,Items,Total ($),Status,Date\n";
+        appState.orders.forEach(o => {
+            let itemsDisplay = (o.items || '').replace(/,/g, ' | ').replace(/"/g, '""');
+            try { if(o.items && o.items.startsWith('[')) itemsDisplay = JSON.parse(o.items).map(i => `${i.name} (x${i.qty})`).join(' | '); } catch(e) {}
+            let row = `"${o.id}","${o.customerName}","${o.phone || ''}","${(o.address || '').replace(/,/g, ' ')}","${itemsDisplay}","${o.total}","${o.status}","${safeFormatDate(o.createdAt)}"`;
+            csvContent += row + "\n";
+        });
+        const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `Orders_${new Date().toISOString().substring(0,10)}.csv`);
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    };
+
+    window.generate100Products = async function() {
+        if(!confirm("តើអ្នកពិតជាចង់បង្កើតទិន្នន័យគំរូទាំងអស់មែនទេ? (វានឹងចំណាយពេលបន្តិច)")) return;
+        
+        showToast("កំពុងបង្កើត Categories & Brands...", "warning");
+
+        const categories = ["Smartphone", "Laptop", "Tablet", "Audio", "Watch"];
+        const brands = ["Apple", "Samsung", "Sony", "JBL", "Asus"];
+        
+        for(let c of categories) {
+            if(!appState.categories.find(cat => cat.name === c)) {
+                await addDoc(collection(db, "categories"), { name: c, description: `Auto Generated ${c}` });
+            }
+        }
+        
+        for(let b of brands) {
+            if(!appState.brands.find(br => br.name === b)) {
+                await addDoc(collection(db, "brands"), { name: b });
+            }
+        }
+
+        showToast("កំពុងបង្កើត ផលិតផល ១០០ មុខ...", "warning");
+
+        const imageLinks = {
+            "Smartphone": "https://images.unsplash.com/photo-1592899677977-9c10ca588bb3?w=500&q=80",
+            "Laptop": "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=500&q=80",
+            "Tablet": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80",
+            "Audio": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&q=80",
+            "Watch": "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80"
+        };
+
+        const prefixes = ["Pro", "Max", "Ultra", "Lite", "Plus", "Air", "Mini"];
+        const rams = ["4GB", "8GB", "12GB", "16GB", "32GB"];
+        const storages = ["64GB", "128GB", "256GB", "512GB", "1TB"];
+        const colors = ["Black", "Silver", "Space Gray", "Midnight Blue", "Rose Gold"];
+
+        let generatedProducts = [];
+        let successCount = 0;
+
+        for (let i = 1; i <= 100; i++) {
+            const randomCat = categories[Math.floor(Math.random() * categories.length)];
+            const randomBrand = brands[Math.floor(Math.random() * brands.length)];
+            const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+            
+            const productName = `${randomBrand} Device ${randomPrefix} Gen ${i}`;
+            const price = Math.floor(Math.random() * 1500) + 99.99; 
+            const stock = Math.floor(Math.random() * 50); 
+            
+            let optionsStr = ""; let descStr = "";
+            if (randomCat === "Smartphone" || randomCat === "Tablet" || randomCat === "Laptop") {
+                optionsStr = `RAM: ${rams[Math.floor(Math.random() * rams.length)]}, Storage: ${storages[Math.floor(Math.random() * storages.length)]}`;
+                descStr = `ផលិតផលស៊េរីថ្មីពីម៉ាក ${randomBrand} បំពាក់ម៉ាស៊ីនលឿន។ ធានាគុណភាពល្អ ស័ក្តិសមបំផុតសម្រាប់ការប្រើប្រាស់ប្រចាំថ្ងៃ។`;
+            } else if (randomCat === "Audio") {
+                optionsStr = `Color: ${colors[Math.floor(Math.random() * colors.length)]}, Type: Wireless`;
+                descStr = `កាសស្តាប់ត្រចៀក Wireless ពី ${randomBrand} ផ្តល់សម្លេងបាសបុកខ្លាំង និងច្បាស់ល្អ។ ថ្មកាន់បានយូរ។`;
+            } else {
+                optionsStr = `Color: ${colors[Math.floor(Math.random() * colors.length)]}, Size: 44mm`;
+                descStr = `នាឡិកាឆ្លាតវៃម៉ាក ${randomBrand} មានមុខងារតាមដានសុខភាព និងការពារជម្រាបទឹក IP68។`;
+            }
+            
+            const pd = { name: productName, price: parseFloat(price.toFixed(2)), category: randomCat, brand: randomBrand, stock: stock, imageUrl: imageLinks[randomCat], options: optionsStr, description: descStr, createdAt: new Date().toISOString() };
+
+            try {
+                const docRef = await addDoc(collection(db, "products"), pd);
+                generatedProducts.push({ id: docRef.id, name: productName });
+                successCount++;
+            } catch (e) {}
+        }
+
+        showToast("កំពុងបង្កើតប័ណ្ណធានាគំរូ...", "warning");
+        for(let j = 0; j < 5; j++) {
+            if(generatedProducts.length > j) {
+                const pd = new Date(); const ed = new Date(); ed.setMonth(pd.getMonth() + 12);
+                const wd = {
+                    serialNumber: `SN-AUTO-${Math.floor(Math.random() * 999999)}`,
+                    productId: generatedProducts[j].id,
+                    productName: generatedProducts[j].name,
+                    customerName: `អតិថិជនសាកល្បង ${j+1}`,
+                    purchaseDate: pd.toISOString().substring(0,10),
+                    expiryDate: ed.toISOString().substring(0,10),
+                    createdAt: new Date().toISOString()
+                };
+                await addDoc(collection(db, "warranties"), wd);
+            }
+        }
+
+        logSystemEvent("Auto Generated", `ប្រព័ន្ធបានបង្កើត ${successCount} ផលិតផល, Categories, Brands និង Warranties ស្វ័យប្រវត្តិ។`);
+        showToast(`ជោគជ័យ! បង្កើតទិន្នន័យរួចរាល់ទាំងស្រុង។`);
+    };
+</script>
+
+</body>
+</html>
