@@ -12,7 +12,7 @@ export default async function handler(req, res) {
             const { amount, orderId } = req.body;
 
             // ==========================================
-            // ១. Auto-Login យក Token ថ្មី (ការពារ Token ផុតកំណត់)
+            // ១. Auto-Login យក Token
             // ==========================================
             const loginResponse = await fetch('https://api-bakong.nbc.gov.kh/v1/auth/login', {
                 method: 'POST',
@@ -23,20 +23,24 @@ export default async function handler(req, res) {
                 })
             });
 
-            const loginData = await loginResponse.json();
+            // ចាប់កំហុសការពារបាគងបោះ HTML មកធ្វើឱ្យគាំង
+            const loginText = await loginResponse.text();
+            let loginData;
+            try {
+                loginData = JSON.parse(loginText);
+            } catch (err) {
+                console.error("Bakong Login Error (HTML Response):", loginText.substring(0, 200));
+                return res.status(500).json({ success: false, message: "បាគង API ប្លុកការ Login របស់ Vercel (ចេញជា HTML)" });
+            }
+
             if (loginData.responseCode !== 0) {
-                return res.status(401).json({ success: false, message: "មិនអាច Login ចូលបាគងបានទេ" });
+                return res.status(401).json({ success: false, message: "មិនអាច Login បានទេ: " + loginData.responseMessage });
             }
 
             const freshToken = loginData.data.token;
 
             // ==========================================
-            // ២. បំប្លែងប្រាក់ដុល្លារពី App ទៅជាប្រាក់រៀល (ឧទាហរណ៍៖ $1 = 4100៛)
-            // ==========================================
-            const amountInKHR = Math.round(amount * 4100);
-
-            // ==========================================
-            // ៣. បង្កើត QR Code ជាលុយរៀល (KHR)
+            // ២. បង្កើត QR Code ជាប្រាក់ដុល្លារ (USD) វិញ
             // ==========================================
             const bakongResponse = await fetch('https://api-bakong.nbc.gov.kh/v1/generate_khqr', {
                 method: 'POST',
@@ -45,21 +49,22 @@ export default async function handler(req, res) {
                     'Authorization': `Bearer ${freshToken}` 
                 },
                 body: JSON.stringify({
-                    bakongAccountId: "virakboth_vann@bkrt", // ត្រឹមត្រូវហើយ!
+                    bakongAccountId: "virakboth_vann@bkrt", 
                     merchantName: "VIRAKBOTH VANN",
                     merchantCity: "Phnom Penh",
-                    amount: amountInKHR,    // ប្រើចំនួនទឹកប្រាក់ដែលគុណជាលុយរៀលរួច
-                    currency: "KHR",        // កំណត់រូបិយប័ណ្ណជាលុយរៀល (116)
+                    amount: amount,          // ប្រើចំនួនទឹកប្រាក់ដើម
+                    currency: "USD",         // ប្តូរមក USD វិញ
                     billNumber: orderId || `ORD-${Date.now()}`
                 })
             });
 
-            const textData = await bakongResponse.text();
+            const qrText = await bakongResponse.text();
             let data;
             try {
-                data = JSON.parse(textData);
+                data = JSON.parse(qrText);
             } catch (e) {
-                throw new Error(`Bakong Server Error: ${textData.substring(0, 100)}`);
+                console.error("Bakong Generate Error (HTML Response):", qrText.substring(0, 200));
+                throw new Error(`បាគង API ប្លុកការបង្កើត QR របស់ Vercel (ចេញជា HTML)`);
             }
 
             if (data.responseCode === 0) {
